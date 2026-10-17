@@ -1,0 +1,50 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+
+# Resultados de build e testes
+*.xcresult
+*.xcarchive
+
+# CocoaPods
+# Podfile.lock é versionado; Pods/ é reconstruído com `pod install`.
+Pods/
+
+# Swift Package Manager (caso alguma ferramenta gere estes arquivos)
+.build/
+.swiftpm/
+
+# Configuração local e credenciais
+# Arquivos .xcconfig compartilhados, sem segredos, são versionados.
+# Apenas variantes locais com segredos ficam fora do Git.
+*.local.xcconfig
+Secrets.xcconfig
+.env
+.env.*
+*.p12
+*.mobileprovision
+*.cer
+
+# Temporários e editores
+*.swp
+*~
+*.tmp
+.idea/
+.vscode/
