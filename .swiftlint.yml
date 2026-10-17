@@ -1,0 +1,31 @@
+included:
+  - MarketWatch
+  - MarketWatchTests
+
+excluded:
+  - Pods
+
+# Formatting rules owned by SwiftFormat.
+disabled_rules:
+  - trailing_comma
+
+opt_in_rules:
+  - contains_over_first_not_nil
+  - empty_count
+  - first_where
+  - private_outlet
+
+empty_count:
+  severity: warning
+
+line_length:
+  warning: 140
+  error: 200
+  ignores_urls: true
+  ignores_comments: true
+
+identifier_name:
+  excluded:
+    - id
+    - x
+    - y
