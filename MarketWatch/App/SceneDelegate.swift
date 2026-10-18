@@ -3,6 +3,8 @@ import UIKit
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
+    private var appCoordinator: AppCoordinator?
+
     func scene(
         _ scene: UIScene,
         willConnectTo _: UISceneSession,
@@ -11,8 +13,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = UINavigationController(rootViewController: PlaceholderViewController())
-        window.makeKeyAndVisible()
+        let coordinator = AppCoordinator(window: window, dependencies: AppDependencies())
+        coordinator.start()
+
         self.window = window
+        appCoordinator = coordinator
     }
 }
