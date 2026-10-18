@@ -135,6 +135,36 @@ struct AssetDetailViewModelTests {
         guard case let .content(content) = state else { return nil }
         return content.chart
     }
+
+    @Test("Reference price uses two decimals from $1 up and keeps precision below $1", arguments: [
+        ("81568.56937603", "$81,568.57"),
+        ("81094.25", "$81,094.25"),
+        ("1", "$1.00"),
+        ("0.99934123", "$0.99934123"),
+        ("0.0000129", "$0.0000129"),
+    ])
+    func referencePriceFormatting(value: String, expected: String) throws {
+        let price = try #require(Decimal(string: value))
+
+        let text = AssetDetailFormatting.referencePrice(
+            price,
+            priceFormatter: AssetDetailFormatting.priceFormatter(),
+            dollarFormatter: AssetDetailFormatting.dollarFormatter()
+        )
+
+        #expect(text == expected)
+    }
+
+    @Test("Missing reference price shows a dash")
+    func missingReferencePrice() {
+        let text = AssetDetailFormatting.referencePrice(
+            nil,
+            priceFormatter: AssetDetailFormatting.priceFormatter(),
+            dollarFormatter: AssetDetailFormatting.dollarFormatter()
+        )
+
+        #expect(text == "—")
+    }
 }
 
 private func isSettled(_ state: AssetDetailState) -> Bool {
