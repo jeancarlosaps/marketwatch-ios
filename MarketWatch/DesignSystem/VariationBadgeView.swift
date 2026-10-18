@@ -27,10 +27,7 @@ final class VariationBadgeView: UIView {
         let formatted = formattedPercent(percent)
 
         valueLabel.text = formatted
-        iconView.image = UIImage(
-            systemName: trend.symbolName,
-            withConfiguration: UIImage.SymbolConfiguration(font: MWFont.percent())
-        )
+        iconView.image = UIImage(systemName: trend.symbolName)
         iconView.tintColor = trend.foregroundColor
         valueLabel.textColor = trend.foregroundColor
         backgroundColor = trend.fillColor
@@ -40,18 +37,14 @@ final class VariationBadgeView: UIView {
         accessibilityLabel = trend.accessibilityLabel(formattedPercent: formatted)
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        valueLabel.font = MWFont.percent(compatibleWith: traitCollection)
-        iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(font: valueLabel.font)
-    }
-
     private func setup() {
         valueLabel.font = MWFont.percent()
         valueLabel.adjustsFontForContentSizeCategory = true
         valueLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         iconView.contentMode = .scaleAspectFit
+        iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(textStyle: .caption1, scale: .small)
+        iconView.adjustsImageSizeForAccessibilityContentSizeCategory = true
         iconView.setContentHuggingPriority(.required, for: .horizontal)
 
         contentStack.axis = .horizontal
@@ -134,11 +127,11 @@ private extension VariationBadgeView.Trend {
     var foregroundColor: UIColor {
         switch self {
         case .positive:
-            return MWColor.positive
+            return MWColor.positiveLabel
         case .negative:
-            return MWColor.negative
+            return MWColor.negativeLabel
         case .neutral:
-            return MWColor.neutral
+            return MWColor.neutralLabel
         }
     }
 

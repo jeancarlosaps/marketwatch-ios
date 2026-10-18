@@ -25,11 +25,8 @@ final class FeedbackStateView: UIView {
     }
 
     func configure(kind: Kind, title: String, message: String, actionTitle: String? = nil) {
-        iconView.image = UIImage(
-            systemName: kind.symbolName,
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: 32, weight: .regular)
-        )
-        iconView.tintColor = kind == .error ? MWColor.negative : MWColor.secondaryLabel
+        iconView.image = UIImage(systemName: kind.symbolName)
+        iconView.tintColor = kind == .error ? MWColor.negativeLabel : MWColor.secondaryLabel
         titleLabel.text = title
         messageLabel.text = message
 
@@ -52,6 +49,7 @@ final class FeedbackStateView: UIView {
 
         iconView.contentMode = .scaleAspectFit
         iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(textStyle: .largeTitle, scale: .medium)
+        iconView.adjustsImageSizeForAccessibilityContentSizeCategory = true
 
         titleLabel.font = MWFont.title()
         titleLabel.adjustsFontForContentSizeCategory = true
@@ -86,7 +84,7 @@ final class FeedbackStateView: UIView {
     private static func actionConfiguration() -> UIButton.Configuration {
         var configuration = UIButton.Configuration.filled()
         configuration.baseBackgroundColor = MWColor.accent
-        configuration.baseForegroundColor = MWColor.canvas
+        configuration.baseForegroundColor = MWColor.onAccent
         configuration.cornerStyle = .capsule
         configuration.contentInsets = NSDirectionalEdgeInsets(
             top: MWLayout.spaceSM,
