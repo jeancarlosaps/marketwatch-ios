@@ -42,10 +42,11 @@ final class MarketListViewModel {
     private var nextPage = 1
     private var hasMore = true
     private var isFetching = false
+    private var paginationNeedsManualRetry = false
     private var generation = 0
 
-    private let priceFormatter = MarketListViewModel.makePriceFormatter()
-    private let percentFormatter = MarketListViewModel.makePercentFormatter()
+    private let priceFormatter = MarketListPresentation.makePriceFormatter()
+    private let percentFormatter = MarketListPresentation.makePercentFormatter()
 
     var content: Driver<MarketListContentState> {
         contentRelay.asDriver()
@@ -101,11 +102,12 @@ final class MarketListViewModel {
 
     func retryPagination() {
         guard !isSearchActive, hasMore else { return }
+        paginationNeedsManualRetry = false
         fetch(page: nextPage, replace: false, triggeredByRefresh: false)
     }
 
     func loadNextPageIfNeeded(showingIndex index: Int) {
-        guard !isSearchActive, hasMore, !isFetching else { return }
+        guard !isSearchActive, hasMore, !isFetching, !paginationNeedsManualRetry else { return }
         let threshold = max(allCoins.count - 5, 0)
         guard index >= threshold else { return }
         fetch(page: nextPage, replace: false, triggeredByRefresh: false)
@@ -137,6 +139,7 @@ final class MarketListViewModel {
             isFetching = false
             nextPage = 1
             hasMore = true
+            paginationNeedsManualRetry = false
             footerRelay.accept(.hidden)
         }
 
@@ -151,6 +154,7 @@ final class MarketListViewModel {
         }
 
         fetchDisposable = service.markets(page: page, perPage: perPage)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] coins in
                     self?.handleSuccess(
@@ -182,6 +186,7 @@ final class MarketListViewModel {
         guard requestGeneration == generation else { return }
 
         isFetching = false
+        paginationNeedsManualRetry = false
         if triggeredByRefresh {
             isRefreshingRelay.accept(false)
         }
@@ -213,7 +218,7 @@ final class MarketListViewModel {
             isRefreshingRelay.accept(false)
         }
 
-        let message = Self.userMessage(for: error)
+        let message = MarketListPresentation.userMessage(for: error)
 
         if allCoins.isEmpty {
             contentRelay.accept(.error(message))
@@ -227,6 +232,7 @@ final class MarketListViewModel {
             return
         }
 
+        paginationNeedsManualRetry = true
         footerRelay.accept(.error(message))
         publishContent()
     }
@@ -280,18 +286,12 @@ final class MarketListViewModel {
     }
 
     private func formatChangeDescription(_ percent: Decimal) -> String {
-        let magnitude = percent < 0 ? -percent : percent
-        let value = percentFormatter.string(from: magnitude as NSDecimalNumber) ?? "0,00%"
-        if percent > 0 {
-            return "alta +\(value)"
-        }
-        if percent < 0 {
-            return "baixa -\(value)"
-        }
-        return "estável \(value)"
+        MarketListPresentation.changeDescription(percent, formatter: percentFormatter)
     }
+}
 
-    private static func makePriceFormatter() -> NumberFormatter {
+private enum MarketListPresentation {
+    static func makePriceFormatter() -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = "USD"
@@ -301,7 +301,7 @@ final class MarketListViewModel {
         return formatter
     }
 
-    private static func makePercentFormatter() -> NumberFormatter {
+    static func makePercentFormatter() -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "pt_BR")
         formatter.numberStyle = .percent
@@ -313,7 +313,19 @@ final class MarketListViewModel {
         return formatter
     }
 
-    private static func userMessage(for error: Error) -> String {
+    static func changeDescription(_ percent: Decimal, formatter: NumberFormatter) -> String {
+        let magnitude = percent < 0 ? -percent : percent
+        let value = formatter.string(from: magnitude as NSDecimalNumber) ?? "0,00%"
+        if percent > 0 {
+            return "alta +\(value)"
+        }
+        if percent < 0 {
+            return "baixa -\(value)"
+        }
+        return "estável \(value)"
+    }
+
+    static func userMessage(for error: Error) -> String {
         switch error as? APIError {
         case .noConnection:
             return "Sem conexão com a internet."
