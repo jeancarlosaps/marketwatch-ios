@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  XCODE_PATH: /Applications/Xcode_26.5.app
+  WORKSPACE: MarketWatch.xcworkspace
+  SCHEME: MarketWatch
+  DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5
+  DERIVED_DATA: DerivedData
+
+jobs:
+  build-test-lint:
+    name: Build, testes e lint
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Selecionar Xcode 26.5
+        run: |
+          sudo xcode-select --switch "$XCODE_PATH"
+          xcodebuild -version
+          swift --version
+
+      # The runner image ships its own CocoaPods version; deployment mode rejects
+      # any lockfile change, including the COCOAPODS line. Use the lockfile's version.
+      - name: Instalar CocoaPods do Podfile.lock
+        run: |
+          version="$(awk '/^COCOAPODS:/ { print $2 }' Podfile.lock)"
+          test -n "$version"
+          gem install cocoapods --version "$version" --no-document
+          echo "COCOAPODS_VERSION=$version" >> "$GITHUB_ENV"
+          pod "_${version}_" --version
+
+      - name: Instalar dependências (CocoaPods)
+        run: pod "_${COCOAPODS_VERSION}_" install --deployment
+
+      - name: Podfile.lock inalterado
+        run: git diff --exit-code -- Podfile.lock
+
+      - name: SwiftLint
+        run: Pods/SwiftLint/swiftlint lint --strict --reporter github-actions-logging
+
+      - name: Build
+        run: |
+          xcodebuild build-for-testing \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -destination "$DESTINATION" \
+            -derivedDataPath "$DERIVED_DATA"
+
+      - name: Testes (Swift Testing)
+        run: |
+          xcodebuild test-without-building \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -destination "$DESTINATION" \
+            -derivedDataPath "$DERIVED_DATA" \
+            -resultBundlePath TestResults.xcresult
+
+      - name: Resumo dos testes
+        if: always() && hashFiles('TestResults.xcresult/Info.plist') != ''
+        run: |
+          xcrun xcresulttool get test-results summary --path TestResults.xcresult > summary.json
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          d = json.load(open("summary.json"))
+          print("### Testes")
+          print()
+          print("| Resultado | Total | Aprovados | Falhas | Ignorados |")
+          print("|---|---|---|---|---|")
+          print(f"| {d['result']} | {d['totalTestCount']} | {d['passedTests']} | {d['failedTests']} | {d['skippedTests']} |")
+          PY
+
+      - name: Publicar resultado dos testes
+        if: always() && hashFiles('TestResults.xcresult/Info.plist') != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: TestResults
+          path: TestResults.xcresult
+          retention-days: 7
