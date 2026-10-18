@@ -47,13 +47,13 @@ struct MarketCoinCellTests {
 
     @Test("Configured cell shows the badge when change percent is present")
     func configureShowsBadgeForChangePercent() throws {
-        let item = try MarketListItem(
+        let item = MarketListItem(
             id: "bitcoin",
             name: "Bitcoin",
             symbol: "BTC",
             imageURL: nil,
             priceText: "$81,025.00",
-            changePercent: #require(Decimal(string: "-1.15")),
+            changePercent: Decimal(string: "-1.15"),
             accessibilityLabel: "Bitcoin"
         )
 

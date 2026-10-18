@@ -34,8 +34,8 @@ struct DesignSystemTests {
         let percent = MWFont.percent()
         let features = percent.fontDescriptor.fontAttributes[.featureSettings] as? [[UIFontDescriptor.FeatureKey: Int]]
         let usesTabularFigures = features?.contains { feature in
-            feature[.featureIdentifier] == kNumberSpacingType
-                && feature[.typeIdentifier] == kMonospacedNumbersSelector
+            feature[.type] == kNumberSpacingType
+                && feature[.selector] == kMonospacedNumbersSelector
         } ?? false
         #expect(usesTabularFigures)
 
