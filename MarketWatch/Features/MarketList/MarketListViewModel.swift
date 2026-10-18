@@ -73,10 +73,6 @@ final class MarketListViewModel {
         footerRelay.asObservable()
     }
 
-    var isRefreshingValues: Observable<Bool> {
-        isRefreshingRelay.asObservable()
-    }
-
     init(service: CoinGeckoService, perPage: Int = CoinGeckoService.defaultPerPage) {
         self.service = service
         self.perPage = perPage
