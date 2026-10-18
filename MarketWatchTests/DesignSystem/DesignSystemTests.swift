@@ -21,6 +21,12 @@ struct DesignSystemTests {
         expect(MWColor.negative, equals: 0xDC2626, trait: dark)
         expect(MWColor.card, equals: 0xFFFFFF, trait: light)
         expect(MWColor.card, equals: 0x151F32, trait: dark)
+        expect(MWColor.positiveLabel, equals: 0x166534, trait: light)
+        expect(MWColor.positiveLabel, equals: 0x4ADE80, trait: dark)
+        expect(MWColor.negativeLabel, equals: 0xB91C1C, trait: light)
+        expect(MWColor.negativeLabel, equals: 0xF87171, trait: dark)
+        expect(MWColor.onAccent, equals: 0x0B1220, trait: light)
+        expect(MWColor.onAccent, equals: 0x0B1220, trait: dark)
     }
 
     @Test("Percent font uses tabular figures and title grows with Dynamic Type")
@@ -56,6 +62,52 @@ struct DesignSystemTests {
         #expect(badge.accessibilityLabel == "Estável 0,00%")
         #expect(visibleText(in: badge) == "0,00%")
         #expect(badge.isAccessibilityElement)
+
+        badge.overrideUserInterfaceStyle = .light
+        try badge.configure(percent: #require(Decimal(string: "3.45")))
+        expect(
+            try #require(firstLabel(in: badge)).textColor,
+            equals: 0x166534,
+            trait: UITraitCollection(userInterfaceStyle: .light)
+        )
+
+        badge.overrideUserInterfaceStyle = .dark
+        try badge.configure(percent: #require(Decimal(string: "-1.15")))
+        expect(
+            try #require(firstLabel(in: badge)).textColor,
+            equals: 0xF87171,
+            trait: UITraitCollection(userInterfaceStyle: .dark)
+        )
+    }
+
+    @Test("Badge and feedback type scale with the content size category")
+    func dynamicTypeScalesBadgeAndFeedback() throws {
+        let badge = VariationBadgeView()
+        badge.configure(percent: 1)
+        let smallBadge = hosted(
+            badge,
+            contentSize: .extraSmall
+        )
+        let smallFont = try #require(firstLabel(in: badge)).font.pointSize
+        let smallIcon = try #require(firstImageView(in: badge)).intrinsicContentSize.height
+        _ = smallBadge
+
+        let largeHost = hosted(badge, contentSize: .accessibilityExtraExtraExtraLarge)
+        let largeFont = try #require(firstLabel(in: badge)).font.pointSize
+        let largeIcon = try #require(firstImageView(in: badge)).intrinsicContentSize.height
+        #expect(largeFont > smallFont)
+        #expect(largeIcon > smallIcon)
+        _ = largeHost
+
+        let feedback = FeedbackStateView()
+        feedback.configure(kind: .empty, title: "Nenhum resultado", message: "Tente outro termo.")
+        let smallFeedback = hosted(feedback, contentSize: .extraSmall)
+        let smallTitle = try #require(firstLabel(in: feedback)).font.pointSize
+        _ = smallFeedback
+        let largeFeedback = hosted(feedback, contentSize: .accessibilityExtraExtraExtraLarge)
+        let largeTitle = try #require(firstLabel(in: feedback)).font.pointSize
+        #expect(largeTitle > smallTitle)
+        _ = largeFeedback
     }
 
     @Test("Feedback view shows the action only when asked and reports the tap")
@@ -115,6 +167,62 @@ private func expect(_ color: UIColor, equals hex: UInt32, trait: UITraitCollecti
     #expect(abs(red - CGFloat((hex >> 16) & 0xFF) / 255) < 0.001)
     #expect(abs(green - CGFloat((hex >> 8) & 0xFF) / 255) < 0.001)
     #expect(abs(blue - CGFloat(hex & 0xFF) / 255) < 0.001)
+}
+
+private func hosted(_ view: UIView, contentSize: UIContentSizeCategory) -> UIWindow {
+    if view.superview != nil {
+        view.removeFromSuperview()
+    }
+
+    let parent = UIViewController()
+    let child = UIViewController()
+    parent.addChild(child)
+    child.view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
+    parent.view.addSubview(child.view)
+    child.didMove(toParent: parent)
+    parent.setOverrideTraitCollection(
+        UITraitCollection(preferredContentSizeCategory: contentSize),
+        forChild: child
+    )
+
+    view.translatesAutoresizingMaskIntoConstraints = false
+    child.view.addSubview(view)
+    NSLayoutConstraint.activate([
+        view.centerXAnchor.constraint(equalTo: child.view.centerXAnchor),
+        view.centerYAnchor.constraint(equalTo: child.view.centerYAnchor),
+        view.leadingAnchor.constraint(greaterThanOrEqualTo: child.view.leadingAnchor, constant: 16),
+        view.trailingAnchor.constraint(lessThanOrEqualTo: child.view.trailingAnchor, constant: -16),
+    ])
+
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+    window.rootViewController = parent
+    window.isHidden = false
+    window.layoutIfNeeded()
+    return window
+}
+
+private func firstLabel(in view: UIView) -> UILabel? {
+    if let label = view as? UILabel {
+        return label
+    }
+    for subview in view.subviews {
+        if let label = firstLabel(in: subview) {
+            return label
+        }
+    }
+    return nil
+}
+
+private func firstImageView(in view: UIView) -> UIImageView? {
+    if let imageView = view as? UIImageView {
+        return imageView
+    }
+    for subview in view.subviews {
+        if let imageView = firstImageView(in: subview) {
+            return imageView
+        }
+    }
+    return nil
 }
 
 private func visibleText(in view: UIView) -> String? {
