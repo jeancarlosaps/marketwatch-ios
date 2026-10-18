@@ -34,10 +34,19 @@ jobs:
           sudo xcode-select --switch "$XCODE_PATH"
           xcodebuild -version
           swift --version
-          pod --version
+
+      # The runner image ships its own CocoaPods version; deployment mode rejects
+      # any lockfile change, including the COCOAPODS line. Use the lockfile's version.
+      - name: Instalar CocoaPods do Podfile.lock
+        run: |
+          version="$(awk '/^COCOAPODS:/ { print $2 }' Podfile.lock)"
+          test -n "$version"
+          gem install cocoapods --version "$version" --no-document
+          echo "COCOAPODS_VERSION=$version" >> "$GITHUB_ENV"
+          pod "_${version}_" --version
 
       - name: Instalar dependências (CocoaPods)
-        run: pod install --deployment
+        run: pod "_${COCOAPODS_VERSION}_" install --deployment
 
       - name: Podfile.lock inalterado
         run: git diff --exit-code -- Podfile.lock
