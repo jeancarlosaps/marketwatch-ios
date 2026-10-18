@@ -18,7 +18,7 @@ struct MarketListSearchBindingTests {
 
     private func makeScreen(handler: @escaping @Sendable (URL) async -> Result<Data, Error>) -> Screen {
         let viewModel = MarketListViewModel(service: CoinGeckoService(client: ScriptedHTTPClient(handler: handler)), perPage: 30)
-        let controller = MarketListViewController(viewModel: viewModel) { _, _ in }
+        let controller = MarketListViewController(viewModel: viewModel, themeManager: ThemeManager()) { _, _ in }
         controller.loadViewIfNeeded()
         return Screen(controller: controller, viewModel: viewModel)
     }
