@@ -15,4 +15,11 @@ struct AppDependencies {
         let viewModel = MarketListViewModel(service: coinGeckoService)
         return MarketListViewController(viewModel: viewModel, onSelectAsset: onSelectAsset)
     }
+
+    func makeAssetDetailViewController(id: String, name: String) -> UIViewController {
+        let viewModel = AssetDetailViewModel(id: id, service: coinGeckoService)
+        let controller = AssetDetailViewController(viewModel: viewModel)
+        controller.title = name
+        return controller
+    }
 }
