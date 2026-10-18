@@ -3,6 +3,8 @@ import RxSwift
 import UIKit
 
 final class MarketListViewController: UIViewController {
+    static let searchDebounce: RxTimeInterval = .milliseconds(300)
+
     private let viewModel: MarketListViewModel
     private let onSelectAsset: (String, String) -> Void
     private let disposeBag = DisposeBag()
@@ -46,7 +48,6 @@ final class MarketListViewController: UIViewController {
     }
 
     private func configureSearch() {
-        searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Buscar criptomoedas"
         searchController.searchBar.autocapitalizationType = .none
@@ -143,6 +144,17 @@ final class MarketListViewController: UIViewController {
         viewModel.assetSelected
             .emit(onNext: { [weak self] id, name in
                 self?.onSelectAsset(id, name)
+            })
+            .disposed(by: disposeBag)
+
+        // Emits on typing and when editing ends, so Cancel clears the filter.
+        // The initial value is skipped so it cannot replace the loading state.
+        searchController.searchBar.rx.text.orEmpty
+            .skip(1)
+            .debounce(Self.searchDebounce, scheduler: MainScheduler.instance)
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] query in
+                self?.viewModel.updateSearchQuery(query)
             })
             .disposed(by: disposeBag)
     }
@@ -249,11 +261,5 @@ extension MarketListViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_: UITableView, willDisplay _: UITableViewCell, forRowAt indexPath: IndexPath) {
         viewModel.loadNextPageIfNeeded(showingIndex: indexPath.row)
-    }
-}
-
-extension MarketListViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        viewModel.updateSearchQuery(searchController.searchBar.text ?? "")
     }
 }
