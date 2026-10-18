@@ -18,6 +18,7 @@ final class AppCoordinator {
             self?.openAsset(id: id, name: name)
         }
         navigationController.setViewControllers([list], animated: false)
+        dependencies.themeManager.attach(to: window)
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
     }
