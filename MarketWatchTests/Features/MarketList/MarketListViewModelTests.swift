@@ -24,6 +24,8 @@ struct MarketListViewModelTests {
         #expect(items[0].id == "bitcoin")
         #expect(items[0].symbol == "BTC")
         #expect(items[0].priceText.contains("$"))
+        #expect(items[0].changePercent == Decimal(string: "0.49985"))
+        #expect(items[1].changePercent == Decimal(string: "-4.3412"))
         #expect(client.requestedCount == 1)
     }
 

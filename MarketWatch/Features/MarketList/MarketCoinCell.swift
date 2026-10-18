@@ -10,8 +10,10 @@ final class MarketCoinCell: UITableViewCell {
     private let priceLabel = UILabel()
     private let badgeView = VariationBadgeView()
     private let textStack = UIStackView()
-    private let priceStack = UIStackView()
-    private let contentStack = UIStackView()
+
+    private var badgeTopConstraint: NSLayoutConstraint?
+    private var badgeBottomConstraint: NSLayoutConstraint?
+    private var priceBottomConstraint: NSLayoutConstraint?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -31,6 +33,7 @@ final class MarketCoinCell: UITableViewCell {
         symbolLabel.text = nil
         priceLabel.text = nil
         badgeView.isHidden = true
+        updateBadgeConstraints(showingBadge: false)
         accessibilityLabel = nil
     }
 
@@ -51,8 +54,10 @@ final class MarketCoinCell: UITableViewCell {
         if let change = item.changePercent {
             badgeView.isHidden = false
             badgeView.configure(percent: change)
+            updateBadgeConstraints(showingBadge: true)
         } else {
             badgeView.isHidden = true
+            updateBadgeConstraints(showingBadge: false)
         }
 
         iconView.kf.setImage(
@@ -69,8 +74,9 @@ final class MarketCoinCell: UITableViewCell {
         isAccessibilityElement = true
         accessibilityTraits = .button
         configureLabels()
-        configureStacks()
+        configureHierarchy()
         activateConstraints()
+        updateBadgeConstraints(showingBadge: false)
     }
 
     private func configureLabels() {
@@ -95,7 +101,12 @@ final class MarketCoinCell: UITableViewCell {
         priceLabel.textColor = MWColor.label
         priceLabel.textAlignment = .right
         priceLabel.minimumScaleFactor = 0.85
+        priceLabel.translatesAutoresizingMaskIntoConstraints = false
+        priceLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        priceLabel.setContentHuggingPriority(.required, for: .vertical)
         updatePriceScalingForContentSize()
+
+        badgeView.translatesAutoresizingMaskIntoConstraints = false
     }
 
     private func updatePriceScalingForContentSize() {
@@ -105,42 +116,80 @@ final class MarketCoinCell: UITableViewCell {
         priceLabel.numberOfLines = isAccessibility ? 0 : 1
     }
 
-    private func configureStacks() {
+    private func configureHierarchy() {
         textStack.axis = .vertical
         textStack.spacing = MWLayout.space2xs
         textStack.alignment = .leading
+        textStack.translatesAutoresizingMaskIntoConstraints = false
         textStack.addArrangedSubview(nameLabel)
         textStack.addArrangedSubview(symbolLabel)
 
-        priceStack.axis = .vertical
-        priceStack.spacing = MWLayout.space2xs
-        priceStack.alignment = .trailing
-        priceStack.addArrangedSubview(priceLabel)
-        priceStack.addArrangedSubview(badgeView)
-
-        contentStack.axis = .horizontal
-        contentStack.alignment = .center
-        contentStack.spacing = MWLayout.spaceSM
-        contentStack.translatesAutoresizingMaskIntoConstraints = false
-        contentStack.addArrangedSubview(iconView)
-        contentStack.addArrangedSubview(textStack)
-        contentStack.addArrangedSubview(priceStack)
-
-        textStack.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        priceStack.setContentHuggingPriority(.required, for: .horizontal)
-        priceStack.setContentCompressionResistancePriority(.required, for: .horizontal)
-        contentView.addSubview(contentStack)
+        // Keep the badge out of UIStackView. An arranged subview without a self-owned
+        // height is collapsed to padding-only (8pt) during table self-sizing.
+        contentView.addSubview(iconView)
+        contentView.addSubview(textStack)
+        contentView.addSubview(priceLabel)
+        contentView.addSubview(badgeView)
     }
 
     private func activateConstraints() {
+        badgeTopConstraint = badgeView.topAnchor.constraint(
+            equalTo: priceLabel.bottomAnchor,
+            constant: MWLayout.space2xs
+        )
+        badgeBottomConstraint = contentView.bottomAnchor.constraint(
+            greaterThanOrEqualTo: badgeView.bottomAnchor,
+            constant: MWLayout.spaceMD
+        )
+        priceBottomConstraint = priceLabel.bottomAnchor.constraint(
+            equalTo: contentView.bottomAnchor,
+            constant: -MWLayout.spaceMD
+        )
+
         NSLayoutConstraint.activate([
+            iconView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: MWLayout.spaceMD),
+            iconView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: MWLayout.spaceMD),
             iconView.widthAnchor.constraint(equalToConstant: 40),
             iconView.heightAnchor.constraint(equalToConstant: 40),
-            contentStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: MWLayout.spaceMD),
-            contentStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: MWLayout.spaceMD),
-            contentStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -MWLayout.spaceMD),
-            contentStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -MWLayout.spaceMD),
+            contentView.bottomAnchor.constraint(
+                greaterThanOrEqualTo: iconView.bottomAnchor,
+                constant: MWLayout.spaceMD
+            ),
+
+            textStack.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: MWLayout.spaceSM),
+            textStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: MWLayout.spaceMD),
+            textStack.trailingAnchor.constraint(
+                lessThanOrEqualTo: priceLabel.leadingAnchor,
+                constant: -MWLayout.spaceSM
+            ),
+            contentView.bottomAnchor.constraint(
+                greaterThanOrEqualTo: textStack.bottomAnchor,
+                constant: MWLayout.spaceMD
+            ),
+
+            priceLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: MWLayout.spaceMD),
+            priceLabel.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
+                constant: -MWLayout.spaceMD
+            ),
+            priceLabel.leadingAnchor.constraint(
+                greaterThanOrEqualTo: textStack.trailingAnchor,
+                constant: MWLayout.spaceSM
+            ),
+
+            badgeView.trailingAnchor.constraint(equalTo: priceLabel.trailingAnchor),
+            badgeView.leadingAnchor.constraint(
+                greaterThanOrEqualTo: textStack.trailingAnchor,
+                constant: MWLayout.spaceSM
+            ),
+
             contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 64),
         ])
+    }
+
+    private func updateBadgeConstraints(showingBadge: Bool) {
+        badgeTopConstraint?.isActive = showingBadge
+        badgeBottomConstraint?.isActive = showingBadge
+        priceBottomConstraint?.isActive = !showingBadge
     }
 }
