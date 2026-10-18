@@ -6,6 +6,7 @@ final class MarketListViewController: UIViewController {
     static let searchDebounce: RxTimeInterval = .milliseconds(300)
 
     private let viewModel: MarketListViewModel
+    private let themeManager: ThemeManager
     private let onSelectAsset: (String, String) -> Void
     private let disposeBag = DisposeBag()
 
@@ -18,8 +19,13 @@ final class MarketListViewController: UIViewController {
 
     private var items: [MarketListItem] = []
 
-    init(viewModel: MarketListViewModel, onSelectAsset: @escaping (String, String) -> Void) {
+    init(
+        viewModel: MarketListViewModel,
+        themeManager: ThemeManager,
+        onSelectAsset: @escaping (String, String) -> Void
+    ) {
         self.viewModel = viewModel
+        self.themeManager = themeManager
         self.onSelectAsset = onSelectAsset
         super.init(nibName: nil, bundle: nil)
     }
@@ -41,10 +47,32 @@ final class MarketListViewController: UIViewController {
         view.backgroundColor = MWColor.canvas
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
+        updateAppearanceButton()
         configureSearch()
         configureTable()
         configureOverlays()
         activateConstraints()
+    }
+
+    private func updateAppearanceButton() {
+        let current = themeManager.preference
+        let actions = AppearancePreference.allCases.map { option in
+            UIAction(
+                title: option.menuTitle,
+                image: UIImage(systemName: option.symbolName),
+                state: option == current ? .on : .off
+            ) { [weak self] _ in
+                self?.themeManager.select(option)
+                self?.updateAppearanceButton()
+            }
+        }
+        let button = UIBarButtonItem(
+            image: UIImage(systemName: current.symbolName),
+            menu: UIMenu(title: "Aparência", children: actions)
+        )
+        button.accessibilityLabel = "Aparência"
+        button.accessibilityValue = current.menuTitle
+        navigationItem.rightBarButtonItem = button
     }
 
     private func configureSearch() {
@@ -261,5 +289,29 @@ extension MarketListViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_: UITableView, willDisplay _: UITableViewCell, forRowAt indexPath: IndexPath) {
         viewModel.loadNextPageIfNeeded(showingIndex: indexPath.row)
+    }
+}
+
+private extension AppearancePreference {
+    var menuTitle: String {
+        switch self {
+        case .automatic:
+            "Automático"
+        case .light:
+            "Claro"
+        case .dark:
+            "Escuro"
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .automatic:
+            "circle.lefthalf.filled"
+        case .light:
+            "sun.max"
+        case .dark:
+            "moon.stars"
+        }
     }
 }

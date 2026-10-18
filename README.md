@@ -26,10 +26,11 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/list-light.png" alt="Lista de criptomoedas no tema claro, com ícone, nome, símbolo, preço em dólar e badge de variação de 24 horas" width="200" />
-  <img src="docs/screenshots/list-dark.png" alt="A mesma lista no tema escuro" width="200" />
-  <img src="docs/screenshots/detail.png" alt="Detalhe do Bitcoin com preço, variação, preço há 24 horas, máxima, mínima, market cap e gráfico de 7 dias" width="200" />
-  <img src="docs/screenshots/search.png" alt="Busca por usd filtrando as stablecoins carregadas" width="200" />
+  <img src="docs/screenshots/list-light.png" alt="Lista de criptomoedas no tema claro, com ícone, nome, símbolo, preço em dólar, badge de variação de 24 horas e botão de aparência" width="160" />
+  <img src="docs/screenshots/list-dark.png" alt="A mesma lista no tema escuro, escolhido pelo seletor de aparência" width="160" />
+  <img src="docs/screenshots/appearance-menu.png" alt="Menu de aparência aberto com as opções Automático, Claro e Escuro" width="160" />
+  <img src="docs/screenshots/detail.png" alt="Detalhe do Bitcoin com preço, variação, preço há 24 horas, máxima, mínima, market cap e gráfico de 7 dias" width="160" />
+  <img src="docs/screenshots/search.png" alt="Busca por usd filtrando as stablecoins carregadas" width="160" />
 </p>
 
 ---
@@ -48,7 +49,7 @@ O foco está em arquitetura clara, uso idiomático de RxSwift e testes de compor
 - Pull-to-refresh.
 - Detalhe do ativo: preço, variação, preço há 24h, máxima e mínima de 24h, market cap e gráfico de 7 dias.
 - Estados de loading (skeleton), lista vazia, busca sem resultado e erro com retry; o gráfico tem retry próprio.
-- Temas claro e escuro.
+- Seletor de aparência na lista: Automático (segue o sistema), Claro ou Escuro, aplicado na hora em todas as telas e salvo localmente para os próximos acessos.
 - Acessibilidade: Dynamic Type e rótulos de VoiceOver em linhas, badges e gráfico.
 
 ## Stack
@@ -86,8 +87,9 @@ flowchart LR
 
 | Componente | Responsabilidade |
 |---|---|
-| `AppDependencies` | Ponto de composição: cria o serviço e monta cada tela com suas dependências |
+| `AppDependencies` | Ponto de composição: cria o serviço e o `ThemeManager` e monta cada tela com suas dependências |
 | `AppCoordinator` | Navegação: lista como raiz e push do detalhe |
+| `ThemeManager` | Preferência de aparência: guarda a escolha no `UserDefaults` e a aplica na janela principal |
 | View controllers | Layout UIKit, eventos e binding dos estados |
 | View models | Estado de apresentação, busca, paginação e formatação; não importam UIKit |
 | `CoinGeckoService` | Operações da CoinGecko e decodificação; recebe `page`/`perPage` a cada chamada, sem guardar estado de paginação |
@@ -97,7 +99,7 @@ O SRP aparece nas fronteiras. O `CoinGeckoService` recebe `page` e `perPage` em 
 
 ```text
 MarketWatch/
-├── App/            AppDelegate, SceneDelegate, AppCoordinator, AppDependencies
+├── App/            AppDelegate, SceneDelegate, AppCoordinator, AppDependencies, ThemeManager
 ├── CoinGecko/      endpoint, serviço e modelos
 ├── Networking/     HTTPClient, AlamofireHTTPClient, APIError
 ├── DesignSystem/   cores, tipografia, badge, estados e skeleton
