@@ -9,8 +9,9 @@ final class VariationBadgeView: UIView {
 
     private let iconView = UIImageView()
     private let valueLabel = UILabel()
-    private let contentStack = UIStackView()
     private let percentFormatter = VariationBadgeView.makePercentFormatter()
+    private lazy var widthConstraint = widthAnchor.constraint(equalToConstant: 1)
+    private lazy var heightConstraint = heightAnchor.constraint(equalToConstant: 1)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -20,6 +21,18 @@ final class VariationBadgeView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        measuredContentSize()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        guard previousTraitCollection?.preferredContentSizeCategory
+            != traitCollection.preferredContentSizeCategory
+        else { return }
+        refreshSizeConstraints()
     }
 
     func configure(percent: Decimal) {
@@ -35,45 +48,67 @@ final class VariationBadgeView: UIView {
         isAccessibilityElement = true
         accessibilityTraits = .staticText
         accessibilityLabel = trend.accessibilityLabel(formattedPercent: formatted)
+        refreshSizeConstraints()
     }
 
     private func setup() {
         valueLabel.font = MWFont.percent()
         valueLabel.adjustsFontForContentSizeCategory = true
-        valueLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        valueLabel.translatesAutoresizingMaskIntoConstraints = false
 
         iconView.contentMode = .scaleAspectFit
         iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(textStyle: .caption1, scale: .small)
         iconView.adjustsImageSizeForAccessibilityContentSizeCategory = true
-        iconView.setContentHuggingPriority(.required, for: .horizontal)
+        iconView.translatesAutoresizingMaskIntoConstraints = false
 
-        contentStack.axis = .horizontal
-        contentStack.alignment = .center
-        contentStack.spacing = MWLayout.space2xs
-        contentStack.isLayoutMarginsRelativeArrangement = true
-        contentStack.layoutMargins = UIEdgeInsets(
-            top: MWLayout.space2xs,
-            left: MWLayout.spaceXS,
-            bottom: MWLayout.space2xs,
-            right: MWLayout.spaceXS
-        )
-        contentStack.addArrangedSubview(iconView)
-        contentStack.addArrangedSubview(valueLabel)
-        contentStack.translatesAutoresizingMaskIntoConstraints = false
-
-        layer.cornerRadius = MWLayout.radiusPill
+        // Capsule radius must stay finite relative to height — an enormous constant with
+        // continuous corner curve can clip the entire fill on recent iOS versions.
+        layer.cornerRadius = 8
         layer.cornerCurve = .continuous
         clipsToBounds = true
 
-        addSubview(contentStack)
+        setContentHuggingPriority(.required, for: .horizontal)
+        setContentHuggingPriority(.required, for: .vertical)
+        setContentCompressionResistancePriority(.required, for: .horizontal)
+        setContentCompressionResistancePriority(.required, for: .vertical)
+
+        addSubview(iconView)
+        addSubview(valueLabel)
+
+        // Size owned by explicit constraints. Subviews centered — never pin top+bottom to self.
         NSLayoutConstraint.activate([
-            contentStack.topAnchor.constraint(equalTo: topAnchor),
-            contentStack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            contentStack.trailingAnchor.constraint(equalTo: trailingAnchor),
-            contentStack.bottomAnchor.constraint(equalTo: bottomAnchor),
+            iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: MWLayout.spaceXS),
+            iconView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            valueLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: MWLayout.space2xs),
+            valueLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -MWLayout.spaceXS),
+            valueLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            widthConstraint,
+            heightConstraint,
         ])
 
         isAccessibilityElement = true
+        refreshSizeConstraints()
+    }
+
+    private func refreshSizeConstraints() {
+        let size = measuredContentSize()
+        widthConstraint.constant = size.width
+        heightConstraint.constant = size.height
+        // Keep the pill radius proportional to height after size is known.
+        layer.cornerRadius = size.height / 2
+        invalidateIntrinsicContentSize()
+    }
+
+    private func measuredContentSize() -> CGSize {
+        let iconSize = iconView.intrinsicContentSize
+        let labelSize = valueLabel.intrinsicContentSize
+        let contentHeight = max(iconSize.height, labelSize.height, valueLabel.font.lineHeight)
+        let width = MWLayout.spaceXS * 2
+            + max(iconSize.width, 0)
+            + MWLayout.space2xs
+            + max(labelSize.width, 0)
+        let height = MWLayout.space2xs * 2 + max(contentHeight, 0)
+        return CGSize(width: max(width, 1), height: max(height, 1))
     }
 
     private func formattedPercent(_ percent: Decimal) -> String {

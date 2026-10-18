@@ -61,7 +61,8 @@ final class MarketListViewController: UIViewController {
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 72, bottom: 0, right: MWLayout.spaceMD)
         tableView.separatorColor = MWColor.separator
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 72
+        // Price + variation badge needs more than a single-line row.
+        tableView.estimatedRowHeight = 88
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(MarketCoinCell.self, forCellReuseIdentifier: MarketCoinCell.reuseIdentifier)
