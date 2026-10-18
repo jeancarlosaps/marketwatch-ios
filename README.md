@@ -90,10 +90,10 @@ flowchart LR
 | `AppCoordinator` | Navegação: lista como raiz e push do detalhe |
 | View controllers | Layout UIKit, eventos e binding dos estados |
 | View models | Estado de apresentação, busca, paginação e formatação; não importam UIKit |
-| `CoinGeckoService` | Operações da CoinGecko e decodificação; não guarda estado |
+| `CoinGeckoService` | Operações da CoinGecko e decodificação; recebe `page`/`perPage` a cada chamada, sem guardar estado de paginação |
 | `HTTPClient` | GET, status HTTP e erros de transporte; único protocolo do projeto |
 
-O SRP aparece nas fronteiras. O serviço não sabe de paginação; quem controla a página atual, as requisições simultâneas e o fim da lista é o `MarketListViewModel`. O `HTTPClient` existe como protocolo porque os testes precisam substituir a rede; o serviço e os view models são concretos, sem abstrações sem uso.
+O SRP aparece nas fronteiras. O `CoinGeckoService` recebe `page` e `perPage` em cada chamada de `markets(page:perPage:)`, mas não mantém estado de paginação. Esse controle pertence ao `MarketListViewModel`: próxima página, bloqueio de requisições simultâneas, concatenação dos resultados, reinício no refresh e detecção do fim da lista. O `HTTPClient` existe como protocolo porque os testes precisam substituir a rede; o serviço e os view models são concretos, sem abstrações sem uso.
 
 ```text
 MarketWatch/
