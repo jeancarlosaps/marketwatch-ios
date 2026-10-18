@@ -34,6 +34,14 @@ final class MarketCoinCell: UITableViewCell {
         accessibilityLabel = nil
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        guard previousTraitCollection?.preferredContentSizeCategory
+            != traitCollection.preferredContentSizeCategory
+        else { return }
+        updatePriceScalingForContentSize()
+    }
+
     func configure(with item: MarketListItem) {
         nameLabel.text = item.name
         symbolLabel.text = item.symbol
@@ -86,8 +94,15 @@ final class MarketCoinCell: UITableViewCell {
         priceLabel.adjustsFontForContentSizeCategory = true
         priceLabel.textColor = MWColor.label
         priceLabel.textAlignment = .right
-        priceLabel.adjustsFontSizeToFitWidth = true
         priceLabel.minimumScaleFactor = 0.85
+        updatePriceScalingForContentSize()
+    }
+
+    private func updatePriceScalingForContentSize() {
+        let isAccessibility = traitCollection.preferredContentSizeCategory.isAccessibilityCategory
+        // Avoid shrinking prices at accessibility sizes; let the label wrap instead.
+        priceLabel.adjustsFontSizeToFitWidth = !isAccessibility
+        priceLabel.numberOfLines = isAccessibility ? 0 : 1
     }
 
     private func configureStacks() {
