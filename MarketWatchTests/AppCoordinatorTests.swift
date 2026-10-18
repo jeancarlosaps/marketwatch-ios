@@ -17,8 +17,8 @@ struct AppCoordinatorTests {
         #expect(navigationController.viewControllers.first is MarketListViewController)
     }
 
-    @Test("Selecting an asset pushes a temporary detail placeholder")
-    func openAssetPushesPlaceholder() throws {
+    @Test("Selecting an asset pushes the detail screen")
+    func openAssetPushesDetail() throws {
         let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
         let coordinator = AppCoordinator(window: window, dependencies: AppDependencies())
         coordinator.start()
@@ -27,6 +27,7 @@ struct AppCoordinatorTests {
         coordinator.openAsset(id: "bitcoin", name: "Bitcoin")
 
         #expect(navigationController.viewControllers.count == 2)
+        #expect(navigationController.viewControllers.last is AssetDetailViewController)
         #expect(navigationController.viewControllers.last?.title == "Bitcoin")
     }
 }
