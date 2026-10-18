@@ -46,7 +46,7 @@ struct AssetDetailViewModelTests {
             if url.path.contains("market_chart") {
                 return .success(CoinGeckoFixtures.priceHistory)
             }
-            return await marketAttempts.next() == 1
+            return marketAttempts.next() == 1
                 ? .failure(APIError.noConnection)
                 : .success(CoinGeckoFixtures.marketsPage1)
         }
@@ -78,7 +78,7 @@ struct AssetDetailViewModelTests {
             guard url.path.contains("market_chart") else {
                 return .success(CoinGeckoFixtures.marketsPage1)
             }
-            if await chartAttempts.next() == 1 {
+            if chartAttempts.next() == 1 {
                 return .failure(APIError.httpStatus(500))
             }
             return .success(CoinGeckoFixtures.priceHistory)
@@ -205,12 +205,13 @@ private final class DetailCollector {
     }
 
     func next(where predicate: @escaping (AssetDetailState) -> Bool) async -> AssetDetailState {
-        lock.lock()
-        if let latest, predicate(latest) {
-            lock.unlock()
-            return latest
-        }
-        return await withCheckedContinuation { continuation in
+        await withCheckedContinuation { continuation in
+            lock.lock()
+            if let latest, predicate(latest) {
+                lock.unlock()
+                continuation.resume(returning: latest)
+                return
+            }
             waiters.append((predicate, continuation))
             lock.unlock()
         }
@@ -219,7 +220,7 @@ private final class DetailCollector {
     private func handle(_ value: AssetDetailState) {
         lock.lock()
         latest = value
-        var pending = waiters
+        let pending = waiters
         waiters.removeAll()
         lock.unlock()
         var remaining: [((AssetDetailState) -> Bool, CheckedContinuation<AssetDetailState, Never>)] = []
