@@ -39,6 +39,7 @@ final class AssetDetailViewModel {
     private var generation = 0
 
     private let priceFormatter = AssetDetailFormatting.priceFormatter()
+    private let dollarFormatter = AssetDetailFormatting.dollarFormatter()
     private let marketCapFormatter = AssetDetailFormatting.marketCapFormatter()
 
     var state: Driver<AssetDetailState> {
@@ -124,7 +125,11 @@ final class AssetDetailViewModel {
     private func makeContent(from coin: MarketCoin, chart: AssetDetailChart) -> AssetDetailContent {
         let symbol = coin.symbol.uppercased()
         let priceText = AssetDetailFormatting.text(coin.currentPrice, formatter: priceFormatter)
-        let referenceText = AssetDetailFormatting.text(coin.referencePrice24h, formatter: priceFormatter)
+        let referenceText = AssetDetailFormatting.referencePrice(
+            coin.referencePrice24h,
+            priceFormatter: priceFormatter,
+            dollarFormatter: dollarFormatter
+        )
         let change = coin.priceChangePercentage24h
         let chartLabel = AssetDetailFormatting.chartAccessibilityLabel(chart)
 
@@ -174,6 +179,28 @@ enum AssetDetailFormatting {
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 8
         return formatter
+    }
+
+    static func dollarFormatter() -> NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = "USD"
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }
+
+    /// The 24h reference price is computed, so it can carry many decimals.
+    /// From $1 up it shows two decimals; below $1 it keeps up to eight for low-priced coins.
+    static func referencePrice(
+        _ value: Decimal?,
+        priceFormatter: NumberFormatter,
+        dollarFormatter: NumberFormatter
+    ) -> String {
+        guard let value else { return "—" }
+        let magnitude = value < 0 ? -value : value
+        return text(value, formatter: magnitude >= 1 ? dollarFormatter : priceFormatter)
     }
 
     static func marketCapFormatter() -> NumberFormatter {
