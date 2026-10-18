@@ -136,4 +136,55 @@ struct MarketListPaginationTests {
         }
         #expect(items.count == 31)
     }
+
+    @Test("willDisplay does not auto-retry after a pagination failure")
+    func willDisplayDoesNotAutoRetryAfterFailure() async throws {
+        let flags = RequestFlags()
+        await flags.setFailPage2(true)
+        let client = ScriptedHTTPClient { url in
+            switch url.queryValue("page") {
+            case "1":
+                return .success(MarketListTestData.fullPage(prefix: "a", count: 30))
+            case "2":
+                if await flags.failPage2 {
+                    return .failure(APIError.noConnection)
+                }
+                return .success(CoinGeckoFixtures.marketsPage2)
+            default:
+                return .success(CoinGeckoFixtures.emptyList)
+            }
+        }
+
+        let viewModel = MarketListViewModel(service: CoinGeckoService(client: client), perPage: 30)
+        let contentCollector = ContentCollector(viewModel.contentValues)
+        let footerCollector = FooterCollector(viewModel.footerValues)
+
+        viewModel.loadInitial()
+        _ = await contentCollector.next(where: MarketListTestData.isSettled)
+
+        viewModel.loadNextPageIfNeeded(showingIndex: 28)
+        _ = await footerCollector.next {
+            if case .error = $0 { return true }
+            return false
+        }
+
+        let requestsAfterFailure = client.requestedCount
+        viewModel.loadNextPageIfNeeded(showingIndex: 28)
+        viewModel.loadNextPageIfNeeded(showingIndex: 29)
+        try await Task.sleep(nanoseconds: 80_000_000)
+        #expect(client.requestedCount == requestsAfterFailure)
+
+        await flags.setFailPage2(false)
+        viewModel.retryPagination()
+        let content = await contentCollector.next { state in
+            if case let .items(items) = state { return items.count > 30 }
+            return false
+        }
+        guard case let .items(items) = content else {
+            Issue.record("Expected manual retry to append")
+            return
+        }
+        #expect(items.count == 31)
+        #expect(client.requestedCount == requestsAfterFailure + 1)
+    }
 }

@@ -88,6 +88,21 @@ struct MarketListViewModelTests {
         #expect(state == .searchEmpty)
     }
 
+    @Test("Search with an empty loaded list stays empty, not searchEmpty")
+    func searchWithEmptyLoadedListStaysEmpty() async throws {
+        let client = ScriptedHTTPClient { _ in .success(CoinGeckoFixtures.emptyList) }
+        let viewModel = MarketListViewModel(service: CoinGeckoService(client: client), perPage: 30)
+        let collector = ContentCollector(viewModel.contentValues)
+
+        viewModel.loadInitial()
+        let empty = await collector.next(where: MarketListTestData.isSettled)
+        #expect(empty == .empty)
+
+        viewModel.updateSearchQuery("bitcoin")
+        try await Task.sleep(nanoseconds: 40_000_000)
+        #expect(collector.latest() == .empty)
+    }
+
     @Test("Refresh replaces the list instead of appending")
     func refreshReplaces() async {
         let flags = RequestFlags()
