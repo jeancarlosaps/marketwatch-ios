@@ -128,7 +128,9 @@ final class MarketListViewController: UIViewController {
 
     private func activateConstraints() {
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            // Large titles track the scroll view under the navigation bar; pinning to the
+            // safe area clips the title UIKit moves into the table after search dismissal.
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
