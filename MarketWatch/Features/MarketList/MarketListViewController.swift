@@ -57,11 +57,9 @@ final class MarketListViewController: UIViewController {
     private func updateAppearanceButton() {
         let current = themeManager.preference
         let actions = AppearancePreference.allCases.map { option in
-            UIAction(
-                title: option.menuTitle,
-                image: UIImage(systemName: option.symbolName),
-                state: option == current ? .on : .off
-            ) { [weak self] _ in
+            UIAction(title: option.menuTitle,
+                     image: UIImage(systemName: option.symbolName),
+                     state: option == current ? .on : .off) { [weak self] _ in
                 self?.themeManager.select(option)
                 self?.updateAppearanceButton()
             }
@@ -207,36 +205,30 @@ final class MarketListViewController: UIViewController {
             tableView.isHidden = true
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
-            feedbackView.configure(
-                kind: .empty,
-                title: "Nenhuma criptomoeda",
-                message: "Puxe para atualizar ou tente novamente.",
-                actionTitle: "Tentar novamente"
-            )
+            feedbackView.configure(kind: .empty,
+                                   title: "Nenhuma criptomoeda",
+                                   message: "Puxe para atualizar ou tente novamente.",
+                                   actionTitle: "Tentar novamente")
         case .searchEmpty:
             items = []
             tableView.reloadData()
             tableView.isHidden = true
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
-            feedbackView.configure(
-                kind: .empty,
-                title: "Nenhum resultado",
-                message: "Nenhum ativo carregado corresponde à busca.",
-                actionTitle: nil
-            )
+            feedbackView.configure(kind: .empty,
+                                   title: "Nenhum resultado",
+                                   message: "Nenhum ativo carregado corresponde à busca.",
+                                   actionTitle: nil)
         case let .error(message):
             items = []
             tableView.reloadData()
             tableView.isHidden = true
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
-            feedbackView.configure(
-                kind: .error,
-                title: "Falha ao carregar",
-                message: message,
-                actionTitle: "Tentar novamente"
-            )
+            feedbackView.configure(kind: .error,
+                                   title: "Falha ao carregar",
+                                   message: message,
+                                   actionTitle: "Tentar novamente")
         }
     }
 
@@ -248,11 +240,10 @@ final class MarketListViewController: UIViewController {
     private func resizeFooter() {
         footerView.setNeedsLayout()
         footerView.layoutIfNeeded()
-        let height = footerView.isHidden ? 0 : footerView.systemLayoutSizeFitting(
-            CGSize(width: tableView.bounds.width, height: UIView.layoutFittingCompressedSize.height),
-            withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .fittingSizeLevel
-        ).height
+        let height = footerView.isHidden ? 0 : footerView.systemLayoutSizeFitting(CGSize(width: tableView.bounds.width,
+                                                                                         height: UIView.layoutFittingCompressedSize.height),
+                                                                                  withHorizontalFittingPriority: .required,
+                                                                                  verticalFittingPriority: .fittingSizeLevel).height
         var frame = footerView.frame
         frame.size.width = tableView.bounds.width
         frame.size.height = height
@@ -272,10 +263,8 @@ extension MarketListViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: MarketCoinCell.reuseIdentifier,
-            for: indexPath
-        ) as? MarketCoinCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MarketCoinCell.reuseIdentifier,
+                                                       for: indexPath) as? MarketCoinCell else {
             return UITableViewCell()
         }
         cell.configure(with: items[indexPath.row])

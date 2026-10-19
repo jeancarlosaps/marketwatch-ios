@@ -181,12 +181,8 @@ final class AssetDetailViewController: UIViewController {
             scrollView.isHidden = true
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
-            feedbackView.configure(
-                kind: .error,
-                title: "Não foi possível abrir",
-                message: message,
-                actionTitle: "Tentar novamente"
-            )
+            feedbackView.configure(kind: .error, title: "Não foi possível abrir",
+                                   message: message, actionTitle: "Tentar novamente")
         case let .content(content):
             skeletonStack.isHidden = true
             feedbackView.isHidden = true
@@ -275,12 +271,8 @@ private extension AssetDetailViewController {
         card.axis = .vertical
         card.spacing = MWLayout.spaceSM
         card.isLayoutMarginsRelativeArrangement = true
-        card.layoutMargins = UIEdgeInsets(
-            top: MWLayout.spaceMD,
-            left: MWLayout.spaceMD,
-            bottom: MWLayout.spaceMD,
-            right: MWLayout.spaceMD
-        )
+        card.layoutMargins = UIEdgeInsets(top: MWLayout.spaceMD, left: MWLayout.spaceMD,
+                                          bottom: MWLayout.spaceMD, right: MWLayout.spaceMD)
         card.backgroundColor = MWColor.card
         card.layer.cornerRadius = MWLayout.radiusCard
         card.layer.cornerCurve = .continuous

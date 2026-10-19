@@ -153,21 +153,17 @@ final class MarketListViewModel {
             .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] coins in
-                    self?.handleSuccess(
-                        coins,
-                        page: page,
-                        replace: replace,
-                        triggeredByRefresh: triggeredByRefresh,
-                        generation: requestGeneration
-                    )
+                    self?.handleSuccess(coins,
+                                        page: page,
+                                        replace: replace,
+                                        triggeredByRefresh: triggeredByRefresh,
+                                        generation: requestGeneration)
                 },
                 onFailure: { [weak self] error in
-                    self?.handleFailure(
-                        error,
-                        replace: replace,
-                        triggeredByRefresh: triggeredByRefresh,
-                        generation: requestGeneration
-                    )
+                    self?.handleFailure(error,
+                                        replace: replace,
+                                        triggeredByRefresh: triggeredByRefresh,
+                                        generation: requestGeneration)
                 }
             )
     }
@@ -266,15 +262,13 @@ final class MarketListViewModel {
         let change = coin.priceChangePercentage24h
         let changeDescription = change.map(formatChangeDescription) ?? "variação indisponível"
 
-        return MarketListItem(
-            id: coin.id,
-            name: coin.name,
-            symbol: symbol,
-            imageURL: coin.imageURL,
-            priceText: priceText,
-            changePercent: change,
-            accessibilityLabel: "\(coin.name), \(symbol), \(priceText), \(changeDescription)"
-        )
+        return MarketListItem(id: coin.id,
+                              name: coin.name,
+                              symbol: symbol,
+                              imageURL: coin.imageURL,
+                              priceText: priceText,
+                              changePercent: change,
+                              accessibilityLabel: "\(coin.name), \(symbol), \(priceText), \(changeDescription)")
     }
 
     private func formatPrice(_ value: Decimal) -> String {

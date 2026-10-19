@@ -68,15 +68,13 @@ final class AssetDetailViewModel {
 
         loadDisposable = Single.zip(service.market(id: id), history)
             .observe(on: MainScheduler.instance)
-            .subscribe(
-                onSuccess: { [weak self] coin, historyResult in
-                    self?.apply(coin: coin, history: historyResult, generation: requestGeneration)
-                },
-                onFailure: { [weak self] error in
-                    guard let self, requestGeneration == self.generation else { return }
-                    self.stateRelay.accept(.error(AssetDetailFormatting.message(for: error)))
-                }
-            )
+            .subscribe(onSuccess: { [weak self] coin, historyResult in
+                           self?.apply(coin: coin, history: historyResult, generation: requestGeneration)
+                       },
+                       onFailure: { [weak self] error in
+                           guard let self, requestGeneration == self.generation else { return }
+                           self.stateRelay.accept(.error(AssetDetailFormatting.message(for: error)))
+                       })
     }
 
     func retry() {
@@ -125,48 +123,30 @@ final class AssetDetailViewModel {
     private func makeContent(from coin: MarketCoin, chart: AssetDetailChart) -> AssetDetailContent {
         let symbol = coin.symbol.uppercased()
         let priceText = AssetDetailFormatting.text(coin.currentPrice, formatter: priceFormatter)
-        let referenceText = AssetDetailFormatting.referencePrice(
-            coin.referencePrice24h,
-            priceFormatter: priceFormatter,
-            dollarFormatter: dollarFormatter
-        )
+        let referenceText = AssetDetailFormatting.referencePrice(coin.referencePrice24h,
+                                                                 priceFormatter: priceFormatter,
+                                                                 dollarFormatter: dollarFormatter)
         let change = coin.priceChangePercentage24h
         let chartLabel = AssetDetailFormatting.chartAccessibilityLabel(chart)
 
-        return AssetDetailContent(
-            name: coin.name,
-            symbol: symbol,
-            imageURL: coin.imageURL,
-            priceText: priceText,
-            changePercent: change,
-            referencePriceText: referenceText,
-            highText: AssetDetailFormatting.text(coin.high24h, formatter: priceFormatter),
-            lowText: AssetDetailFormatting.text(coin.low24h, formatter: priceFormatter),
-            marketCapText: AssetDetailFormatting.text(coin.marketCap, formatter: marketCapFormatter),
-            chart: chart,
-            chartAccessibilityLabel: chartLabel,
-            accessibilityLabel: "\(coin.name), \(symbol), \(priceText). Preço há 24h \(referenceText). \(chartLabel)"
-        )
+        return AssetDetailContent(name: coin.name, symbol: symbol, imageURL: coin.imageURL,
+                                  priceText: priceText, changePercent: change, referencePriceText: referenceText,
+                                  highText: AssetDetailFormatting.text(coin.high24h, formatter: priceFormatter),
+                                  lowText: AssetDetailFormatting.text(coin.low24h, formatter: priceFormatter),
+                                  marketCapText: AssetDetailFormatting.text(coin.marketCap, formatter: marketCapFormatter),
+                                  chart: chart, chartAccessibilityLabel: chartLabel,
+                                  accessibilityLabel: "\(coin.name), \(symbol), \(priceText). Preço há 24h \(referenceText). \(chartLabel)")
     }
 }
 
 private extension AssetDetailContent {
     func replacing(chart: AssetDetailChart) -> AssetDetailContent {
-        AssetDetailContent(
-            name: name,
-            symbol: symbol,
-            imageURL: imageURL,
-            priceText: priceText,
-            changePercent: changePercent,
-            referencePriceText: referencePriceText,
-            highText: highText,
-            lowText: lowText,
-            marketCapText: marketCapText,
-            chart: chart,
-            chartAccessibilityLabel: AssetDetailFormatting.chartAccessibilityLabel(chart),
-            accessibilityLabel: "\(name), \(symbol), \(priceText). Preço há 24h \(referencePriceText). "
-                + AssetDetailFormatting.chartAccessibilityLabel(chart)
-        )
+        AssetDetailContent(name: name, symbol: symbol, imageURL: imageURL,
+                           priceText: priceText, changePercent: changePercent, referencePriceText: referencePriceText,
+                           highText: highText, lowText: lowText, marketCapText: marketCapText,
+                           chart: chart, chartAccessibilityLabel: AssetDetailFormatting.chartAccessibilityLabel(chart),
+                           accessibilityLabel: "\(name), \(symbol), \(priceText). Preço há 24h \(referencePriceText). "
+                               + AssetDetailFormatting.chartAccessibilityLabel(chart))
     }
 }
 
@@ -193,11 +173,8 @@ enum AssetDetailFormatting {
 
     /// The 24h reference price is computed, so it can carry many decimals.
     /// From $1 up it shows two decimals; below $1 it keeps up to eight for low-priced coins.
-    static func referencePrice(
-        _ value: Decimal?,
-        priceFormatter: NumberFormatter,
-        dollarFormatter: NumberFormatter
-    ) -> String {
+    static func referencePrice(_ value: Decimal?, priceFormatter: NumberFormatter,
+                               dollarFormatter: NumberFormatter) -> String {
         guard let value else { return "—" }
         let magnitude = value < 0 ? -value : value
         return text(value, formatter: magnitude >= 1 ? dollarFormatter : priceFormatter)

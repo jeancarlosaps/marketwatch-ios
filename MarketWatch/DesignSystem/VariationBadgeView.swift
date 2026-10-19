@@ -30,7 +30,7 @@ final class VariationBadgeView: UIView {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         guard previousTraitCollection?.preferredContentSizeCategory
-            != traitCollection.preferredContentSizeCategory
+                != traitCollection.preferredContentSizeCategory
         else { return }
         refreshSizeConstraints()
     }

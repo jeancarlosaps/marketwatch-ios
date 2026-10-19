@@ -15,22 +15,12 @@ enum MWFont {
     }
 
     static func percent(compatibleWith traitCollection: UITraitCollection? = nil) -> UIFont {
-        scaled(
-            size: 12,
-            weight: .semibold,
-            textStyle: .caption1,
-            tabular: true,
-            compatibleWith: traitCollection
-        )
+        scaled(size: 12, weight: .semibold, textStyle: .caption1,
+               tabular: true, compatibleWith: traitCollection)
     }
 
-    private static func scaled(
-        size: CGFloat,
-        weight: UIFont.Weight,
-        textStyle: UIFont.TextStyle,
-        tabular: Bool = false,
-        compatibleWith traitCollection: UITraitCollection?
-    ) -> UIFont {
+    private static func scaled(size: CGFloat, weight: UIFont.Weight, textStyle: UIFont.TextStyle,
+                               tabular: Bool = false, compatibleWith traitCollection: UITraitCollection?) -> UIFont {
         var descriptor = UIFont.systemFont(ofSize: size, weight: weight).fontDescriptor
         if tabular {
             descriptor = descriptor.addingAttributes([
