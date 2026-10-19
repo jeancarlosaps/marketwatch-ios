@@ -35,13 +35,8 @@ final class SkeletonBlockView: UIView {
         isAccessibilityElement = false
         accessibilityElementsHidden = true
         isUserInteractionEnabled = false
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateShimmer),
-            name: UIAccessibility.reduceMotionStatusDidChangeNotification,
-            object: nil
-        )
+        NotificationCenter.default.addObserver(self, selector: #selector(updateShimmer),
+                                               name: UIAccessibility.reduceMotionStatusDidChangeNotification, object: nil)
     }
 
     @objc

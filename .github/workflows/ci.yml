@@ -16,7 +16,8 @@ env:
   XCODE_PATH: /Applications/Xcode_26.5.app
   WORKSPACE: MarketWatch.xcworkspace
   SCHEME: MarketWatch
-  DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5
+  SIMULATOR_NAME: iPhone 17 Pro
+  SIMULATOR_OS: "26.5"
   DERIVED_DATA: DerivedData
 
 jobs:
@@ -53,6 +54,24 @@ jobs:
 
       - name: SwiftLint
         run: Pods/SwiftLint/swiftlint lint --strict --reporter github-actions-logging
+
+      # The runner can start without the simulator visible to xcodebuild. Resolve the
+      # device by UDID, creating it when only the runtime is present, and log what exists.
+      - name: Preparar simulador
+        run: |
+          xcrun simctl list runtimes available
+          runtime="com.apple.CoreSimulator.SimRuntime.iOS-${SIMULATOR_OS//./-}"
+          udid="$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"].get(sys.argv[1], [])
+          print(next((d["udid"] for d in devices if d["name"] == sys.argv[2]), ""))
+          ' "$runtime" "$SIMULATOR_NAME")"
+          if [ -z "$udid" ]; then
+            udid="$(xcrun simctl create "$SIMULATOR_NAME" \
+              "com.apple.CoreSimulator.SimDeviceType.${SIMULATOR_NAME// /-}" "$runtime")"
+          fi
+          xcrun simctl list devices | grep "$udid"
+          echo "DESTINATION=platform=iOS Simulator,id=$udid" >> "$GITHUB_ENV"
 
       - name: Build
         run: |

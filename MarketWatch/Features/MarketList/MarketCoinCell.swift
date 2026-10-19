@@ -151,37 +151,25 @@ final class MarketCoinCell: UITableViewCell {
             iconView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: MWLayout.spaceMD),
             iconView.widthAnchor.constraint(equalToConstant: 40),
             iconView.heightAnchor.constraint(equalToConstant: 40),
-            contentView.bottomAnchor.constraint(
-                greaterThanOrEqualTo: iconView.bottomAnchor,
-                constant: MWLayout.spaceMD
-            ),
+            contentView.bottomAnchor.constraint(greaterThanOrEqualTo: iconView.bottomAnchor,
+                                                constant: MWLayout.spaceMD),
 
             textStack.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: MWLayout.spaceSM),
             textStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: MWLayout.spaceMD),
-            textStack.trailingAnchor.constraint(
-                lessThanOrEqualTo: priceLabel.leadingAnchor,
-                constant: -MWLayout.spaceSM
-            ),
-            contentView.bottomAnchor.constraint(
-                greaterThanOrEqualTo: textStack.bottomAnchor,
-                constant: MWLayout.spaceMD
-            ),
+            textStack.trailingAnchor.constraint(lessThanOrEqualTo: priceLabel.leadingAnchor,
+                                                constant: -MWLayout.spaceSM),
+            contentView.bottomAnchor.constraint(greaterThanOrEqualTo: textStack.bottomAnchor,
+                                                constant: MWLayout.spaceMD),
 
             priceLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: MWLayout.spaceMD),
-            priceLabel.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor,
-                constant: -MWLayout.spaceMD
-            ),
-            priceLabel.leadingAnchor.constraint(
-                greaterThanOrEqualTo: textStack.trailingAnchor,
-                constant: MWLayout.spaceSM
-            ),
+            priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
+                                                 constant: -MWLayout.spaceMD),
+            priceLabel.leadingAnchor.constraint(greaterThanOrEqualTo: textStack.trailingAnchor,
+                                                constant: MWLayout.spaceSM),
 
             badgeView.trailingAnchor.constraint(equalTo: priceLabel.trailingAnchor),
-            badgeView.leadingAnchor.constraint(
-                greaterThanOrEqualTo: textStack.trailingAnchor,
-                constant: MWLayout.spaceSM
-            ),
+            badgeView.leadingAnchor.constraint(greaterThanOrEqualTo: textStack.trailingAnchor,
+                                               constant: MWLayout.spaceSM),
 
             contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 64),
         ])
