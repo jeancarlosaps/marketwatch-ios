@@ -54,14 +54,12 @@ final class MarketListFooterView: UIView {
         messageLabel.numberOfLines = 0
 
         var configuration = UIButton.Configuration.plain()
-        configuration.title = "Tentar novamente"
+        configuration.title = String(localized: "Tentar novamente")
         configuration.baseForegroundColor = MWColor.accent
-        configuration.contentInsets = NSDirectionalEdgeInsets(
-            top: MWLayout.spaceXS,
-            leading: MWLayout.spaceMD,
-            bottom: MWLayout.spaceXS,
-            trailing: MWLayout.spaceMD
-        )
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: MWLayout.spaceXS,
+                                                              leading: MWLayout.spaceMD,
+                                                              bottom: MWLayout.spaceXS,
+                                                              trailing: MWLayout.spaceMD)
         configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
             outgoing.font = MWFont.action()

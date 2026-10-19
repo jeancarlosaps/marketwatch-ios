@@ -1,0 +1,396 @@
+{
+  "sourceLanguage" : "pt-BR",
+  "strings" : {
+    "%@, %@, %@. Preço há 24h %@. %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %@, %@. Preço há 24h %@. %@"
+          }
+        }
+      }
+    },
+    "Alta %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alta %@"
+          }
+        }
+      }
+    },
+    "Aparência" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aparência"
+          }
+        }
+      }
+    },
+    "Automático" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automático"
+          }
+        }
+      }
+    },
+    "Baixa %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baixa %@"
+          }
+        }
+      }
+    },
+    "Buscar criptomoedas" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar criptomoedas"
+          }
+        }
+      }
+    },
+    "Claro" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claro"
+          }
+        }
+      }
+    },
+    "Escuro" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escuro"
+          }
+        }
+      }
+    },
+    "Estável %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estável %@"
+          }
+        }
+      }
+    },
+    "Falha ao carregar" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha ao carregar"
+          }
+        }
+      }
+    },
+    "Gráfico de 7 dias com um ponto" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gráfico de 7 dias com um ponto"
+          }
+        }
+      }
+    },
+    "Gráfico de 7 dias indisponível" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gráfico de 7 dias indisponível"
+          }
+        }
+      }
+    },
+    "Gráfico de 7 dias sem dados" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gráfico de 7 dias sem dados"
+          }
+        }
+      }
+    },
+    "Gráfico de 7 dias, preço estável" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gráfico de 7 dias, preço estável"
+          }
+        }
+      }
+    },
+    "Gráfico de 7 dias, tendência de alta" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gráfico de 7 dias, tendência de alta"
+          }
+        }
+      }
+    },
+    "Gráfico de 7 dias, tendência de baixa" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gráfico de 7 dias, tendência de baixa"
+          }
+        }
+      }
+    },
+    "Market cap" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Market cap"
+          }
+        }
+      }
+    },
+    "Mercado" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mercado"
+          }
+        }
+      }
+    },
+    "Muitas requisições. Tente novamente em instantes." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muitas requisições. Tente novamente em instantes."
+          }
+        }
+      }
+    },
+    "Máxima 24h" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Máxima 24h"
+          }
+        }
+      }
+    },
+    "Mínima 24h" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mínima 24h"
+          }
+        }
+      }
+    },
+    "Nenhum ativo carregado corresponde à busca." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum ativo carregado corresponde à busca."
+          }
+        }
+      }
+    },
+    "Nenhum resultado" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum resultado"
+          }
+        }
+      }
+    },
+    "Nenhuma criptomoeda" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma criptomoeda"
+          }
+        }
+      }
+    },
+    "Não encontramos esse ativo." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não encontramos esse ativo."
+          }
+        }
+      }
+    },
+    "Não foi possível abrir" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível abrir"
+          }
+        }
+      }
+    },
+    "Não foi possível carregar as cotações." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível carregar as cotações."
+          }
+        }
+      }
+    },
+    "Não foi possível carregar o ativo." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível carregar o ativo."
+          }
+        }
+      }
+    },
+    "Não foi possível carregar o gráfico." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível carregar o gráfico."
+          }
+        }
+      }
+    },
+    "Preço há 24h" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preço há 24h"
+          }
+        }
+      }
+    },
+    "Puxe para atualizar ou tente novamente." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puxe para atualizar ou tente novamente."
+          }
+        }
+      }
+    },
+    "Recarregar gráfico" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recarregar gráfico"
+          }
+        }
+      }
+    },
+    "Sem conexão com a internet." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem conexão com a internet."
+          }
+        }
+      }
+    },
+    "Sem dados de preço neste período." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem dados de preço neste período."
+          }
+        }
+      }
+    },
+    "Tentar novamente" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tentar novamente"
+          }
+        }
+      }
+    },
+    "alta +%@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "alta +%@"
+          }
+        }
+      }
+    },
+    "baixa -%@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "baixa -%@"
+          }
+        }
+      }
+    },
+    "estável %@" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "estável %@"
+          }
+        }
+      }
+    },
+    "variação indisponível" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "variação indisponível"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

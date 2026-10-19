@@ -68,15 +68,13 @@ final class AssetDetailViewModel {
 
         loadDisposable = Single.zip(service.market(id: id), history)
             .observe(on: MainScheduler.instance)
-            .subscribe(
-                onSuccess: { [weak self] coin, historyResult in
-                    self?.apply(coin: coin, history: historyResult, generation: requestGeneration)
-                },
-                onFailure: { [weak self] error in
-                    guard let self, requestGeneration == self.generation else { return }
-                    self.stateRelay.accept(.error(AssetDetailFormatting.message(for: error)))
-                }
-            )
+            .subscribe(onSuccess: { [weak self] coin, historyResult in
+                           self?.apply(coin: coin, history: historyResult, generation: requestGeneration)
+                       },
+                       onFailure: { [weak self] error in
+                           guard let self, requestGeneration == self.generation else { return }
+                           self.stateRelay.accept(.error(AssetDetailFormatting.message(for: error)))
+                       })
     }
 
     func retry() {
@@ -108,7 +106,7 @@ final class AssetDetailViewModel {
     private func apply(coin: MarketCoin?, history: Result<PriceHistory, Error>, generation: Int) {
         guard generation == self.generation else { return }
         guard let coin else {
-            stateRelay.accept(.error("Não encontramos esse ativo."))
+            stateRelay.accept(.error(String(localized: "Não encontramos esse ativo.")))
             return
         }
 
@@ -125,48 +123,32 @@ final class AssetDetailViewModel {
     private func makeContent(from coin: MarketCoin, chart: AssetDetailChart) -> AssetDetailContent {
         let symbol = coin.symbol.uppercased()
         let priceText = AssetDetailFormatting.text(coin.currentPrice, formatter: priceFormatter)
-        let referenceText = AssetDetailFormatting.referencePrice(
-            coin.referencePrice24h,
-            priceFormatter: priceFormatter,
-            dollarFormatter: dollarFormatter
-        )
+        let referenceText = AssetDetailFormatting.referencePrice(coin.referencePrice24h,
+                                                                 priceFormatter: priceFormatter,
+                                                                 dollarFormatter: dollarFormatter)
         let change = coin.priceChangePercentage24h
         let chartLabel = AssetDetailFormatting.chartAccessibilityLabel(chart)
+        let accessibilityLabel = String(localized: "\(coin.name), \(symbol), \(priceText). Preço há 24h \(referenceText). \(chartLabel)")
 
-        return AssetDetailContent(
-            name: coin.name,
-            symbol: symbol,
-            imageURL: coin.imageURL,
-            priceText: priceText,
-            changePercent: change,
-            referencePriceText: referenceText,
-            highText: AssetDetailFormatting.text(coin.high24h, formatter: priceFormatter),
-            lowText: AssetDetailFormatting.text(coin.low24h, formatter: priceFormatter),
-            marketCapText: AssetDetailFormatting.text(coin.marketCap, formatter: marketCapFormatter),
-            chart: chart,
-            chartAccessibilityLabel: chartLabel,
-            accessibilityLabel: "\(coin.name), \(symbol), \(priceText). Preço há 24h \(referenceText). \(chartLabel)"
-        )
+        return AssetDetailContent(name: coin.name, symbol: symbol, imageURL: coin.imageURL,
+                                  priceText: priceText, changePercent: change, referencePriceText: referenceText,
+                                  highText: AssetDetailFormatting.text(coin.high24h, formatter: priceFormatter),
+                                  lowText: AssetDetailFormatting.text(coin.low24h, formatter: priceFormatter),
+                                  marketCapText: AssetDetailFormatting.text(coin.marketCap, formatter: marketCapFormatter),
+                                  chart: chart, chartAccessibilityLabel: chartLabel,
+                                  accessibilityLabel: accessibilityLabel)
     }
 }
 
 private extension AssetDetailContent {
     func replacing(chart: AssetDetailChart) -> AssetDetailContent {
-        AssetDetailContent(
-            name: name,
-            symbol: symbol,
-            imageURL: imageURL,
-            priceText: priceText,
-            changePercent: changePercent,
-            referencePriceText: referencePriceText,
-            highText: highText,
-            lowText: lowText,
-            marketCapText: marketCapText,
-            chart: chart,
-            chartAccessibilityLabel: AssetDetailFormatting.chartAccessibilityLabel(chart),
-            accessibilityLabel: "\(name), \(symbol), \(priceText). Preço há 24h \(referencePriceText). "
-                + AssetDetailFormatting.chartAccessibilityLabel(chart)
-        )
+        let chartLabel = AssetDetailFormatting.chartAccessibilityLabel(chart)
+        let accessibilityLabel = String(localized: "\(name), \(symbol), \(priceText). Preço há 24h \(referencePriceText). \(chartLabel)")
+        return AssetDetailContent(name: name, symbol: symbol, imageURL: imageURL,
+                                  priceText: priceText, changePercent: changePercent, referencePriceText: referencePriceText,
+                                  highText: highText, lowText: lowText, marketCapText: marketCapText,
+                                  chart: chart, chartAccessibilityLabel: chartLabel,
+                                  accessibilityLabel: accessibilityLabel)
     }
 }
 
@@ -193,11 +175,9 @@ enum AssetDetailFormatting {
 
     /// The 24h reference price is computed, so it can carry many decimals.
     /// From $1 up it shows two decimals; below $1 it keeps up to eight for low-priced coins.
-    static func referencePrice(
-        _ value: Decimal?,
-        priceFormatter: NumberFormatter,
-        dollarFormatter: NumberFormatter
-    ) -> String {
+    static func referencePrice(_ value: Decimal?, priceFormatter: NumberFormatter,
+                               dollarFormatter: NumberFormatter) -> String
+    {
         guard let value else { return "—" }
         let magnitude = value < 0 ? -value : value
         return text(value, formatter: magnitude >= 1 ? dollarFormatter : priceFormatter)
@@ -225,27 +205,27 @@ enum AssetDetailFormatting {
     static func chartAccessibilityLabel(_ chart: AssetDetailChart) -> String {
         switch chart {
         case .empty:
-            return "Gráfico de 7 dias sem dados"
+            return String(localized: "Gráfico de 7 dias sem dados")
         case .unavailable:
-            return "Gráfico de 7 dias indisponível"
+            return String(localized: "Gráfico de 7 dias indisponível")
         case let .prices(prices):
             guard let first = prices.first, let last = prices.last, prices.count > 1 else {
-                return "Gráfico de 7 dias com um ponto"
+                return String(localized: "Gráfico de 7 dias com um ponto")
             }
-            if last > first { return "Gráfico de 7 dias, tendência de alta" }
-            if last < first { return "Gráfico de 7 dias, tendência de baixa" }
-            return "Gráfico de 7 dias, preço estável"
+            if last > first { return String(localized: "Gráfico de 7 dias, tendência de alta") }
+            if last < first { return String(localized: "Gráfico de 7 dias, tendência de baixa") }
+            return String(localized: "Gráfico de 7 dias, preço estável")
         }
     }
 
     static func message(for error: Error) -> String {
         switch error as? APIError {
         case .noConnection:
-            return "Sem conexão com a internet."
+            return String(localized: "Sem conexão com a internet.")
         case .rateLimited:
-            return "Muitas requisições. Tente novamente em instantes."
+            return String(localized: "Muitas requisições. Tente novamente em instantes.")
         case .httpStatus, .decoding, .unknown, .none:
-            return "Não foi possível carregar o ativo."
+            return String(localized: "Não foi possível carregar o ativo.")
         }
     }
 }

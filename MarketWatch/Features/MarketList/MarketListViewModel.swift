@@ -153,21 +153,17 @@ final class MarketListViewModel {
             .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] coins in
-                    self?.handleSuccess(
-                        coins,
-                        page: page,
-                        replace: replace,
-                        triggeredByRefresh: triggeredByRefresh,
-                        generation: requestGeneration
-                    )
+                    self?.handleSuccess(coins,
+                                        page: page,
+                                        replace: replace,
+                                        triggeredByRefresh: triggeredByRefresh,
+                                        generation: requestGeneration)
                 },
                 onFailure: { [weak self] error in
-                    self?.handleFailure(
-                        error,
-                        replace: replace,
-                        triggeredByRefresh: triggeredByRefresh,
-                        generation: requestGeneration
-                    )
+                    self?.handleFailure(error,
+                                        replace: replace,
+                                        triggeredByRefresh: triggeredByRefresh,
+                                        generation: requestGeneration)
                 }
             )
     }
@@ -264,17 +260,15 @@ final class MarketListViewModel {
         let priceText = coin.currentPrice.map(formatPrice) ?? "—"
         let symbol = coin.symbol.uppercased()
         let change = coin.priceChangePercentage24h
-        let changeDescription = change.map(formatChangeDescription) ?? "variação indisponível"
+        let changeDescription = change.map(formatChangeDescription) ?? String(localized: "variação indisponível")
 
-        return MarketListItem(
-            id: coin.id,
-            name: coin.name,
-            symbol: symbol,
-            imageURL: coin.imageURL,
-            priceText: priceText,
-            changePercent: change,
-            accessibilityLabel: "\(coin.name), \(symbol), \(priceText), \(changeDescription)"
-        )
+        return MarketListItem(id: coin.id,
+                              name: coin.name,
+                              symbol: symbol,
+                              imageURL: coin.imageURL,
+                              priceText: priceText,
+                              changePercent: change,
+                              accessibilityLabel: "\(coin.name), \(symbol), \(priceText), \(changeDescription)")
     }
 
     private func formatPrice(_ value: Decimal) -> String {
@@ -313,22 +307,22 @@ private enum MarketListPresentation {
         let magnitude = percent < 0 ? -percent : percent
         let value = formatter.string(from: magnitude as NSDecimalNumber) ?? "0,00%"
         if percent > 0 {
-            return "alta +\(value)"
+            return String(localized: "alta +\(value)")
         }
         if percent < 0 {
-            return "baixa -\(value)"
+            return String(localized: "baixa -\(value)")
         }
-        return "estável \(value)"
+        return String(localized: "estável \(value)")
     }
 
     static func userMessage(for error: Error) -> String {
         switch error as? APIError {
         case .noConnection:
-            return "Sem conexão com a internet."
+            return String(localized: "Sem conexão com a internet.")
         case .rateLimited:
-            return "Muitas requisições. Tente novamente em instantes."
+            return String(localized: "Muitas requisições. Tente novamente em instantes.")
         case .httpStatus, .decoding, .unknown, .none:
-            return "Não foi possível carregar as cotações."
+            return String(localized: "Não foi possível carregar as cotações.")
         }
     }
 }

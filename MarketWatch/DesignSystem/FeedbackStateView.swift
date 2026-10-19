@@ -24,7 +24,9 @@ final class FeedbackStateView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(kind: Kind, title: String, message: String, actionTitle: String? = nil) {
+    func configure(kind: Kind, title: String,
+                   message: String, actionTitle: String? = nil)
+    {
         iconView.image = UIImage(systemName: kind.symbolName)
         iconView.tintColor = kind == .error ? MWColor.negativeLabel : MWColor.secondaryLabel
         titleLabel.text = title

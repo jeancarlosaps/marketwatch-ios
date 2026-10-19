@@ -6,17 +6,14 @@ struct AppDependencies {
     let coinGeckoService: CoinGeckoService
     let themeManager: ThemeManager
 
-    init(
-        coinGeckoService: CoinGeckoService = CoinGeckoService(client: AlamofireHTTPClient()),
-        themeManager: ThemeManager? = nil
-    ) {
+    init(coinGeckoService: CoinGeckoService = CoinGeckoService(client: AlamofireHTTPClient()),
+         themeManager: ThemeManager? = nil)
+    {
         self.coinGeckoService = coinGeckoService
         self.themeManager = themeManager ?? ThemeManager()
     }
 
-    func makeMarketListViewController(
-        onSelectAsset: @escaping (String, String) -> Void
-    ) -> UIViewController {
+    func makeMarketListViewController(onSelectAsset: @escaping (String, String) -> Void) -> UIViewController {
         let viewModel = MarketListViewModel(service: coinGeckoService)
         return MarketListViewController(viewModel: viewModel, themeManager: themeManager, onSelectAsset: onSelectAsset)
     }

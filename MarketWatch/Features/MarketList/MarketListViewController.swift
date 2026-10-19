@@ -43,7 +43,7 @@ final class MarketListViewController: UIViewController {
     }
 
     private func setupUI() {
-        title = "Mercado"
+        title = String(localized: "Mercado")
         view.backgroundColor = MWColor.canvas
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
@@ -57,27 +57,26 @@ final class MarketListViewController: UIViewController {
     private func updateAppearanceButton() {
         let current = themeManager.preference
         let actions = AppearancePreference.allCases.map { option in
-            UIAction(
-                title: option.menuTitle,
-                image: UIImage(systemName: option.symbolName),
-                state: option == current ? .on : .off
-            ) { [weak self] _ in
-                self?.themeManager.select(option)
-                self?.updateAppearanceButton()
-            }
+            UIAction(title: option.menuTitle,
+                     image: UIImage(systemName: option.symbolName),
+                     state: option == current ? .on : .off,
+                     handler: { [weak self] _ in
+                         self?.themeManager.select(option)
+                         self?.updateAppearanceButton()
+                     })
         }
         let button = UIBarButtonItem(
             image: UIImage(systemName: current.symbolName),
-            menu: UIMenu(title: "Aparência", children: actions)
+            menu: UIMenu(title: String(localized: "Aparência"), children: actions)
         )
-        button.accessibilityLabel = "Aparência"
+        button.accessibilityLabel = String(localized: "Aparência")
         button.accessibilityValue = current.menuTitle
         navigationItem.rightBarButtonItem = button
     }
 
     private func configureSearch() {
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Buscar criptomoedas"
+        searchController.searchBar.placeholder = String(localized: "Buscar criptomoedas")
         searchController.searchBar.autocapitalizationType = .none
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
@@ -130,7 +129,9 @@ final class MarketListViewController: UIViewController {
 
     private func activateConstraints() {
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            // Large titles track the scroll view under the navigation bar; pinning to the
+            // safe area clips the title UIKit moves into the table after search dismissal.
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -192,51 +193,45 @@ final class MarketListViewController: UIViewController {
         case .loading:
             items = []
             tableView.reloadData()
-            tableView.isHidden = true
+            tableView.isScrollEnabled = false
             feedbackView.isHidden = true
             skeletonStack.isHidden = false
         case let .items(nextItems):
             items = nextItems
             tableView.reloadData()
-            tableView.isHidden = false
+            tableView.isScrollEnabled = true
             feedbackView.isHidden = true
             skeletonStack.isHidden = true
         case .empty:
             items = []
             tableView.reloadData()
-            tableView.isHidden = true
+            tableView.isScrollEnabled = false
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
-            feedbackView.configure(
-                kind: .empty,
-                title: "Nenhuma criptomoeda",
-                message: "Puxe para atualizar ou tente novamente.",
-                actionTitle: "Tentar novamente"
-            )
+            feedbackView.configure(kind: .empty,
+                                   title: String(localized: "Nenhuma criptomoeda"),
+                                   message: String(localized: "Puxe para atualizar ou tente novamente."),
+                                   actionTitle: String(localized: "Tentar novamente"))
         case .searchEmpty:
             items = []
             tableView.reloadData()
-            tableView.isHidden = true
+            tableView.isScrollEnabled = false
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
-            feedbackView.configure(
-                kind: .empty,
-                title: "Nenhum resultado",
-                message: "Nenhum ativo carregado corresponde à busca.",
-                actionTitle: nil
-            )
+            feedbackView.configure(kind: .empty,
+                                   title: String(localized: "Nenhum resultado"),
+                                   message: String(localized: "Nenhum ativo carregado corresponde à busca."),
+                                   actionTitle: nil)
         case let .error(message):
             items = []
             tableView.reloadData()
-            tableView.isHidden = true
+            tableView.isScrollEnabled = false
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
-            feedbackView.configure(
-                kind: .error,
-                title: "Falha ao carregar",
-                message: message,
-                actionTitle: "Tentar novamente"
-            )
+            feedbackView.configure(kind: .error,
+                                   title: String(localized: "Falha ao carregar"),
+                                   message: message,
+                                   actionTitle: String(localized: "Tentar novamente"))
         }
     }
 
@@ -248,11 +243,10 @@ final class MarketListViewController: UIViewController {
     private func resizeFooter() {
         footerView.setNeedsLayout()
         footerView.layoutIfNeeded()
-        let height = footerView.isHidden ? 0 : footerView.systemLayoutSizeFitting(
-            CGSize(width: tableView.bounds.width, height: UIView.layoutFittingCompressedSize.height),
-            withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .fittingSizeLevel
-        ).height
+        let height = footerView.isHidden ? 0 : footerView.systemLayoutSizeFitting(CGSize(width: tableView.bounds.width,
+                                                                                         height: UIView.layoutFittingCompressedSize.height),
+                                                                                  withHorizontalFittingPriority: .required,
+                                                                                  verticalFittingPriority: .fittingSizeLevel).height
         var frame = footerView.frame
         frame.size.width = tableView.bounds.width
         frame.size.height = height
@@ -272,10 +266,9 @@ extension MarketListViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: MarketCoinCell.reuseIdentifier,
-            for: indexPath
-        ) as? MarketCoinCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MarketCoinCell.reuseIdentifier,
+                                                       for: indexPath) as? MarketCoinCell
+        else {
             return UITableViewCell()
         }
         cell.configure(with: items[indexPath.row])
@@ -296,11 +289,11 @@ private extension AppearancePreference {
     var menuTitle: String {
         switch self {
         case .automatic:
-            "Automático"
+            String(localized: "Automático")
         case .light:
-            "Claro"
+            String(localized: "Claro")
         case .dark:
-            "Escuro"
+            String(localized: "Escuro")
         }
     }
 
