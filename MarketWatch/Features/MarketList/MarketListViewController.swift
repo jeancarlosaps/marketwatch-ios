@@ -192,19 +192,19 @@ final class MarketListViewController: UIViewController {
         case .loading:
             items = []
             tableView.reloadData()
-            tableView.isHidden = true
+            tableView.isScrollEnabled = false
             feedbackView.isHidden = true
             skeletonStack.isHidden = false
         case let .items(nextItems):
             items = nextItems
             tableView.reloadData()
-            tableView.isHidden = false
+            tableView.isScrollEnabled = true
             feedbackView.isHidden = true
             skeletonStack.isHidden = true
         case .empty:
             items = []
             tableView.reloadData()
-            tableView.isHidden = true
+            tableView.isScrollEnabled = false
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
             feedbackView.configure(kind: .empty,
@@ -214,7 +214,7 @@ final class MarketListViewController: UIViewController {
         case .searchEmpty:
             items = []
             tableView.reloadData()
-            tableView.isHidden = true
+            tableView.isScrollEnabled = false
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
             feedbackView.configure(kind: .empty,
@@ -224,7 +224,7 @@ final class MarketListViewController: UIViewController {
         case let .error(message):
             items = []
             tableView.reloadData()
-            tableView.isHidden = true
+            tableView.isScrollEnabled = false
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
             feedbackView.configure(kind: .error,
