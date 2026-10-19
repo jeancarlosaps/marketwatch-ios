@@ -20,7 +20,8 @@ enum MWFont {
     }
 
     private static func scaled(size: CGFloat, weight: UIFont.Weight, textStyle: UIFont.TextStyle,
-                               tabular: Bool = false, compatibleWith traitCollection: UITraitCollection?) -> UIFont {
+                               tabular: Bool = false, compatibleWith traitCollection: UITraitCollection?) -> UIFont
+    {
         var descriptor = UIFont.systemFont(ofSize: size, weight: weight).fontDescriptor
         if tabular {
             descriptor = descriptor.addingAttributes([

@@ -59,10 +59,11 @@ final class MarketListViewController: UIViewController {
         let actions = AppearancePreference.allCases.map { option in
             UIAction(title: option.menuTitle,
                      image: UIImage(systemName: option.symbolName),
-                     state: option == current ? .on : .off) { [weak self] _ in
-                self?.themeManager.select(option)
-                self?.updateAppearanceButton()
-            }
+                     state: option == current ? .on : .off,
+                     handler: { [weak self] _ in
+                         self?.themeManager.select(option)
+                         self?.updateAppearanceButton()
+                     })
         }
         let button = UIBarButtonItem(
             image: UIImage(systemName: current.symbolName),
@@ -266,7 +267,8 @@ extension MarketListViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MarketCoinCell.reuseIdentifier,
-                                                       for: indexPath) as? MarketCoinCell else {
+                                                       for: indexPath) as? MarketCoinCell
+        else {
             return UITableViewCell()
         }
         cell.configure(with: items[indexPath.row])

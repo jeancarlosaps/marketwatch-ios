@@ -7,7 +7,8 @@ struct AppDependencies {
     let themeManager: ThemeManager
 
     init(coinGeckoService: CoinGeckoService = CoinGeckoService(client: AlamofireHTTPClient()),
-         themeManager: ThemeManager? = nil) {
+         themeManager: ThemeManager? = nil)
+    {
         self.coinGeckoService = coinGeckoService
         self.themeManager = themeManager ?? ThemeManager()
     }

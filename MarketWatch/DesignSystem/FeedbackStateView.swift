@@ -25,7 +25,8 @@ final class FeedbackStateView: UIView {
     }
 
     func configure(kind: Kind, title: String,
-                   message: String, actionTitle: String? = nil) {
+                   message: String, actionTitle: String? = nil)
+    {
         iconView.image = UIImage(systemName: kind.symbolName)
         iconView.tintColor = kind == .error ? MWColor.negativeLabel : MWColor.secondaryLabel
         titleLabel.text = title

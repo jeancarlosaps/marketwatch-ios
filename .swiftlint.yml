@@ -18,6 +18,10 @@ opt_in_rules:
 empty_count:
   severity: warning
 
+# SwiftFormat wraps the brace of multiline signatures onto its own line.
+opening_brace:
+  ignore_multiline_function_signatures: true
+
 line_length:
   warning: 140
   error: 200

@@ -176,7 +176,8 @@ enum AssetDetailFormatting {
     /// The 24h reference price is computed, so it can carry many decimals.
     /// From $1 up it shows two decimals; below $1 it keeps up to eight for low-priced coins.
     static func referencePrice(_ value: Decimal?, priceFormatter: NumberFormatter,
-                               dollarFormatter: NumberFormatter) -> String {
+                               dollarFormatter: NumberFormatter) -> String
+    {
         guard let value else { return "—" }
         let magnitude = value < 0 ? -value : value
         return text(value, formatter: magnitude >= 1 ? dollarFormatter : priceFormatter)
