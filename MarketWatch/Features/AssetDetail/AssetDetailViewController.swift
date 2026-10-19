@@ -88,7 +88,7 @@ final class AssetDetailViewController: UIViewController {
         chartMessageLabel.numberOfLines = 0
         chartMessageLabel.isHidden = true
 
-        chartRetryButton.setTitle("Recarregar gráfico", for: .normal)
+        chartRetryButton.setTitle(String(localized: "Recarregar gráfico"), for: .normal)
         chartRetryButton.titleLabel?.font = MWFont.action()
         chartRetryButton.titleLabel?.adjustsFontForContentSizeCategory = true
         chartRetryButton.addTarget(self, action: #selector(retryChart), for: .touchUpInside)
@@ -181,8 +181,8 @@ final class AssetDetailViewController: UIViewController {
             scrollView.isHidden = true
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
-            feedbackView.configure(kind: .error, title: "Não foi possível abrir",
-                                   message: message, actionTitle: "Tentar novamente")
+            feedbackView.configure(kind: .error, title: String(localized: "Não foi possível abrir"),
+                                   message: message, actionTitle: String(localized: "Tentar novamente"))
         case let .content(content):
             skeletonStack.isHidden = true
             feedbackView.isHidden = true
@@ -223,12 +223,12 @@ final class AssetDetailViewController: UIViewController {
         case .empty:
             chartView.isHidden = false
             chartView.configure(prices: [], accessibilityLabel: content.chartAccessibilityLabel)
-            chartMessageLabel.text = "Sem dados de preço neste período."
+            chartMessageLabel.text = String(localized: "Sem dados de preço neste período.")
             chartMessageLabel.isHidden = false
             chartRetryButton.isHidden = true
         case .unavailable:
             chartView.isHidden = true
-            chartMessageLabel.text = "Não foi possível carregar o gráfico."
+            chartMessageLabel.text = String(localized: "Não foi possível carregar o gráfico.")
             chartMessageLabel.isHidden = false
             chartRetryButton.isHidden = false
         }
@@ -263,10 +263,10 @@ private extension AssetDetailViewController {
 
     func makeFactsCard() -> UIView {
         let card = UIStackView(arrangedSubviews: [
-            factRow(title: "Preço há 24h", value: referenceValue),
-            factRow(title: "Máxima 24h", value: highValue),
-            factRow(title: "Mínima 24h", value: lowValue),
-            factRow(title: "Market cap", value: marketCapValue),
+            factRow(title: String(localized: "Preço há 24h"), value: referenceValue),
+            factRow(title: String(localized: "Máxima 24h"), value: highValue),
+            factRow(title: String(localized: "Mínima 24h"), value: lowValue),
+            factRow(title: String(localized: "Market cap"), value: marketCapValue),
         ])
         card.axis = .vertical
         card.spacing = MWLayout.spaceSM

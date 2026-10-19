@@ -260,7 +260,7 @@ final class MarketListViewModel {
         let priceText = coin.currentPrice.map(formatPrice) ?? "—"
         let symbol = coin.symbol.uppercased()
         let change = coin.priceChangePercentage24h
-        let changeDescription = change.map(formatChangeDescription) ?? "variação indisponível"
+        let changeDescription = change.map(formatChangeDescription) ?? String(localized: "variação indisponível")
 
         return MarketListItem(id: coin.id,
                               name: coin.name,
@@ -307,22 +307,22 @@ private enum MarketListPresentation {
         let magnitude = percent < 0 ? -percent : percent
         let value = formatter.string(from: magnitude as NSDecimalNumber) ?? "0,00%"
         if percent > 0 {
-            return "alta +\(value)"
+            return String(localized: "alta +\(value)")
         }
         if percent < 0 {
-            return "baixa -\(value)"
+            return String(localized: "baixa -\(value)")
         }
-        return "estável \(value)"
+        return String(localized: "estável \(value)")
     }
 
     static func userMessage(for error: Error) -> String {
         switch error as? APIError {
         case .noConnection:
-            return "Sem conexão com a internet."
+            return String(localized: "Sem conexão com a internet.")
         case .rateLimited:
-            return "Muitas requisições. Tente novamente em instantes."
+            return String(localized: "Muitas requisições. Tente novamente em instantes.")
         case .httpStatus, .decoding, .unknown, .none:
-            return "Não foi possível carregar as cotações."
+            return String(localized: "Não foi possível carregar as cotações.")
         }
     }
 }

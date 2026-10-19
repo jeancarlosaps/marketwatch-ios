@@ -43,7 +43,7 @@ final class MarketListViewController: UIViewController {
     }
 
     private func setupUI() {
-        title = "Mercado"
+        title = String(localized: "Mercado")
         view.backgroundColor = MWColor.canvas
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
@@ -66,16 +66,16 @@ final class MarketListViewController: UIViewController {
         }
         let button = UIBarButtonItem(
             image: UIImage(systemName: current.symbolName),
-            menu: UIMenu(title: "Aparência", children: actions)
+            menu: UIMenu(title: String(localized: "Aparência"), children: actions)
         )
-        button.accessibilityLabel = "Aparência"
+        button.accessibilityLabel = String(localized: "Aparência")
         button.accessibilityValue = current.menuTitle
         navigationItem.rightBarButtonItem = button
     }
 
     private func configureSearch() {
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Buscar criptomoedas"
+        searchController.searchBar.placeholder = String(localized: "Buscar criptomoedas")
         searchController.searchBar.autocapitalizationType = .none
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
@@ -206,9 +206,9 @@ final class MarketListViewController: UIViewController {
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
             feedbackView.configure(kind: .empty,
-                                   title: "Nenhuma criptomoeda",
-                                   message: "Puxe para atualizar ou tente novamente.",
-                                   actionTitle: "Tentar novamente")
+                                   title: String(localized: "Nenhuma criptomoeda"),
+                                   message: String(localized: "Puxe para atualizar ou tente novamente."),
+                                   actionTitle: String(localized: "Tentar novamente"))
         case .searchEmpty:
             items = []
             tableView.reloadData()
@@ -216,8 +216,8 @@ final class MarketListViewController: UIViewController {
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
             feedbackView.configure(kind: .empty,
-                                   title: "Nenhum resultado",
-                                   message: "Nenhum ativo carregado corresponde à busca.",
+                                   title: String(localized: "Nenhum resultado"),
+                                   message: String(localized: "Nenhum ativo carregado corresponde à busca."),
                                    actionTitle: nil)
         case let .error(message):
             items = []
@@ -226,9 +226,9 @@ final class MarketListViewController: UIViewController {
             skeletonStack.isHidden = true
             feedbackView.isHidden = false
             feedbackView.configure(kind: .error,
-                                   title: "Falha ao carregar",
+                                   title: String(localized: "Falha ao carregar"),
                                    message: message,
-                                   actionTitle: "Tentar novamente")
+                                   actionTitle: String(localized: "Tentar novamente"))
         }
     }
 
@@ -285,11 +285,11 @@ private extension AppearancePreference {
     var menuTitle: String {
         switch self {
         case .automatic:
-            "Automático"
+            String(localized: "Automático")
         case .light:
-            "Claro"
+            String(localized: "Claro")
         case .dark:
-            "Escuro"
+            String(localized: "Escuro")
         }
     }
 

@@ -184,11 +184,11 @@ private extension VariationBadgeView.Trend {
     func accessibilityLabel(formattedPercent: String) -> String {
         switch self {
         case .positive:
-            return "Alta \(formattedPercent)"
+            return String(localized: "Alta \(formattedPercent)")
         case .negative:
-            return "Baixa \(formattedPercent)"
+            return String(localized: "Baixa \(formattedPercent)")
         case .neutral:
-            return "Estável \(formattedPercent)"
+            return String(localized: "Estável \(formattedPercent)")
         }
     }
 }

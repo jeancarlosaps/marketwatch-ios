@@ -189,10 +189,10 @@
 				};
 			};
 			buildConfigurationList = 56283EBD6DD86A56CED63937 /* Build configuration list for PBXProject "MarketWatch" */;
-			developmentRegion = en;
+			developmentRegion = "pt-BR";
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
+				"pt-BR",
 				Base,
 			);
 			mainGroup = 8D3FC6DB5D0827F168A73277;
